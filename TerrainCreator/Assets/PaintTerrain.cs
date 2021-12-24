@@ -37,6 +37,9 @@ public class PaintTerrain : MonoBehaviour
     void Start()
     {
         TerrainData terrainData = Terrain.activeTerrain.terrainData;
+
+        terrainData.alphamapResolution = terrainData.heightmapResolution - 1;
+
         float[,,] splatmapData = new float[terrainData.alphamapWidth,
             terrainData.alphamapHeight,
             terrainData.alphamapLayers];
