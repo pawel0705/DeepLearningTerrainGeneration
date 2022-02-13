@@ -12,9 +12,12 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     [Tooltip("The Canvas which is a parent to this Mouse Drawing Component")]
     private Canvas HostCanvas;
 
-    [Range(2, 20)]
+    [SerializeField]
+    private PredictionClient client;
+
+    [Range(1, 20)]
     [Tooltip("The Pens Radius")]
-    public int penRadius = 10;
+    public int penRadius = 1;
 
     [Tooltip("The Pens Colour.")]
     public Color32 penColour = new Color32(0, 0, 0, 255);
@@ -89,7 +92,9 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         // Set scale Factor...
         m_scaleFactor = HostCanvas.scaleFactor * 2;
 
-        var tex = new Texture2D(Convert.ToInt32(Screen.width / m_scaleFactor), Convert.ToInt32(Screen.height / m_scaleFactor), TextureFormat.RGBA32, false);
+        // var tex = new Texture2D(Convert.ToInt32(Screen.width / m_scaleFactor), Convert.ToInt32(Screen.height / m_scaleFactor), TextureFormat.RGBA32, false);
+
+        var tex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
         for (int i = 0; i < tex.width; i++)
         {
             for (int j = 0; j < tex.height; j++)
@@ -108,7 +113,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     /// <param name="pos"></param>
     private void WritePixels(Vector2 pos)
     {
-        pos /= m_scaleFactor;
+        Debug.Log(pos);
         var mainTex = m_image.texture;
         var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
 
@@ -121,7 +126,8 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         tex2d.ReadPixels(new Rect(0, 0, mainTex.width, mainTex.height), 0, 0);
 
         var col = IsEraser ? backroundColour : penColour;
-        var positions = m_lastPos.HasValue ? GetLinearPositions(m_lastPos.Value, pos) : new List<Vector2>() { pos };
+
+        var positions =  m_lastPos.HasValue ? GetLinearPositions(m_lastPos.Value, pos) : new List<Vector2>() { pos };
 
         foreach (var position in positions)
         {
@@ -274,6 +280,42 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     /// </summary>
     /// <param name="eventData"></param>
     public void OnPointerExit(PointerEventData eventData) => IsInFocus = false;
+
+    public void Predict()
+    {
+        var mainTex = m_image.texture;
+        var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGB24, false);
+
+        var curTex = RenderTexture.active;
+        var renTex = new RenderTexture(mainTex.width, mainTex.height, 32);
+
+        Graphics.Blit(mainTex, renTex);
+        RenderTexture.active = renTex;
+
+        tex2d.ReadPixels(new Rect(0, 0, mainTex.width, mainTex.height), 0, 0);
+
+        tex2d.Apply();
+
+        RenderTexture.active = curTex;
+        Destroy(renTex);
+        curTex = null;
+        renTex = null;
+        mainTex = null;
+
+        var input = tex2d.EncodeToPNG();
+
+        client.Predict(input, output =>
+        {
+         //   var outputMax = output.Max();
+          //  var maxIndex = Array.IndexOf(output, outputMax);
+          //  prediction = "Prediction: " + Convert.ToChar(64 + maxIndex);
+          //  Debug.Log(prediction);
+        }, error =>
+        {
+            Debug.Log(error.Message);
+            // TODO: when i am not lazy
+        });
+    }
 
     /// <summary>
     /// Exports the Sketch as a PNG.

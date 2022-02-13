@@ -23,7 +23,7 @@ public class PredictionClient : MonoBehaviour
         predictionRequester.Start();
     }
 
-    public void Predict(float[] input, Action<float[]> onOutputReceived, Action<Exception> fallback)
+    public void Predict(byte[] input, Action<float[]> onOutputReceived, Action<Exception> fallback)
     {
         predictionRequester.SetOnTextReceivedListener(onOutputReceived, fallback);
         predictionRequester.SendInput(input);

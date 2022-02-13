@@ -56,14 +56,15 @@ public class PredictionRequester : RunAbleThread
         NetMQConfig.Cleanup(); // this line is needed to prevent unity freeze after one use, not sure why yet
     }
 
-    public void SendInput(float[] input)
+    public void SendInput(byte[] input)
     {
+        Debug.Log("w inpucie");
         Debug.Log(input.Length);
         try
         {
-            var byteArray = new byte[input.Length * 4];
-            Buffer.BlockCopy(input, 0, byteArray, 0, byteArray.Length);
-            client.SendFrame(byteArray);
+           // var byteArray = new byte[input.Length * 4];
+           // Buffer.BlockCopy(input, 0, byteArray, 0, byteArray.Length);
+            client.SendFrame(input);
         }
         catch (Exception ex)
         {
