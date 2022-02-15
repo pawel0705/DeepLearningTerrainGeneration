@@ -14,27 +14,17 @@ public class PaintTerrain : MonoBehaviour
 
     public SplatHeights[] splatHeights;
 
-    void normalize(float[] v)
-    {
-        float total = 0;
-        for(int i =0; i < v.Length; i++)
-        {
-            total += v[i];
-        }
-
-        for(int i = 0; i < v.Length; i++)
-        {
-            v[i] /= total;
-        }
-    }
-
-    public float map(float value, float sMin, float sMax, float mMin, float mMax)
-    {
-        return (value - sMin) * (mMax - mMin) / (sMax - sMin) + mMin;
-    }
-
-    // Start is called before the first frame update
     void Start()
+    {
+
+    }
+
+    void Update()
+    {
+
+    }
+
+    public void RepaintTerrain()
     {
         TerrainData terrainData = Terrain.activeTerrain.terrainData;
 
@@ -46,38 +36,38 @@ public class PaintTerrain : MonoBehaviour
 
         for (int y = 0; y < terrainData.alphamapHeight; y++)
         {
-            for(int x = 0; x < terrainData.alphamapWidth; x++)
+            for (int x = 0; x < terrainData.alphamapWidth; x++)
             {
                 float terrainHeight = terrainData.GetHeight(y, x);
                 float[] splat = new float[splatHeights.Length];
 
-                for(int i = 0; i < splatHeights.Length; i++)
+                for (int i = 0; i < splatHeights.Length; i++)
                 {
-                    float thisNoise = map(Mathf.PerlinNoise(x * 0.05f, y * 0.05f),0,1, 0.5f, 1);
+                    float thisNoise = Map(Mathf.PerlinNoise(x * 0.05f, y * 0.05f), 0, 1, 0.5f, 1);
 
                     float thisHeightStart = splatHeights[i].startingHeight * thisNoise
                         - splatHeights[i].overlap * thisNoise;
                     float nextHeightStart = 0;
 
-                    if(i != splatHeights.Length - 1)
+                    if (i != splatHeights.Length - 1)
                     {
                         nextHeightStart = splatHeights[i + 1].startingHeight * thisNoise
                             + splatHeights[i + 1].overlap * thisNoise;
                     }
 
-                    if (i==splatHeights.Length - 1 && terrainHeight >= thisHeightStart)
+                    if (i == splatHeights.Length - 1 && terrainHeight >= thisHeightStart)
                     {
                         splat[i] = 1;
                     }
-                    else if(terrainHeight >= thisHeightStart && terrainHeight <= nextHeightStart)
+                    else if (terrainHeight >= thisHeightStart && terrainHeight <= nextHeightStart)
                     {
                         splat[i] = 1;
                     }
                 }
 
-                normalize(splat);
+                Normalize(splat);
 
-                for(int j = 0; j < splatHeights.Length; j++)
+                for (int j = 0; j < splatHeights.Length; j++)
                 {
                     splatmapData[x, y, j] = splat[j];
                 }
@@ -87,9 +77,22 @@ public class PaintTerrain : MonoBehaviour
         terrainData.SetAlphamaps(0, 0, splatmapData);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Normalize(float[] v)
     {
-        
+        float total = 0;
+        for (int i = 0; i < v.Length; i++)
+        {
+            total += v[i];
+        }
+
+        for (int i = 0; i < v.Length; i++)
+        {
+            v[i] /= total;
+        }
+    }
+
+    private float Map(float value, float sMin, float sMax, float mMin, float mMax)
+    {
+        return (value - sMin) * (mMax - mMin) / (sMax - sMin) + mMin;
     }
 }
