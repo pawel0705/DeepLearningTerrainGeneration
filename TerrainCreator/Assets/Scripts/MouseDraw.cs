@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+
 public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField]
@@ -29,10 +30,15 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     [Tooltip("Pen Pointer Graphic GameObject")]
     private Image penPointer;
 
+    [SerializeField]
+    private Terrain terrain;
+
     [Tooltip("Toggles between Pen and Eraser.")]
     public bool IsEraser = false;
 
     private bool _isInFocus = false;
+
+    private byte[] output_tmp;
     /// <summary>
     /// Is this Component in focus.
     /// </summary>
@@ -53,6 +59,8 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private RawImage m_image;
 
     private Vector2? m_lastPos;
+
+    private Texture2D tmp_text;
 
     // Start is called before the first frame update
     void Start()
@@ -113,7 +121,6 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     /// <param name="pos"></param>
     private void WritePixels(Vector2 pos)
     {
-        Debug.Log(pos);
         var mainTex = m_image.texture;
         var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
 
@@ -159,8 +166,9 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void ClearTexture()
     {
         var mainTex = m_image.texture;
-        var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
+        var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGB24, false);
 
+        /*
         for (int i = 0; i < tex2d.width; i++)
         {
             for (int j = 0; j < tex2d.height; j++)
@@ -168,9 +176,30 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 tex2d.SetPixel(i, j, backroundColour);
             }
         }
+        */
+
+        var startPoint = 0;
+        for (var x = 0; x < 256; x++)
+        {
+            for (var y = 0; y < 256; y++)
+            {
+                tex2d.SetPixel(x, y, new Color(output_tmp[startPoint] / 255.0f, output_tmp[startPoint + 1] / 255.0f, output_tmp[startPoint + 2] / 255.0f));
+                startPoint += 3;
+            }
+        }
 
         tex2d.Apply();
         m_image.texture = tex2d;
+
+        var heights = new float[256,256];
+        for (int x = 0; x < 256; x++)
+        {
+            for (int y = 0; y < 256; y++)
+            {
+                heights[x, y] = tex2d.GetPixel(y, x).grayscale * 0.6f;
+            }
+        }
+        terrain.terrainData.SetHeights(0, 0, heights);
     }
 
     /// <summary>
@@ -306,13 +335,12 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         client.Predict(input, output =>
         {
-         //   var outputMax = output.Max();
-          //  var maxIndex = Array.IndexOf(output, outputMax);
-          //  prediction = "Prediction: " + Convert.ToChar(64 + maxIndex);
-          //  Debug.Log(prediction);
+            output_tmp = new byte[output.Length];
+            Array.Copy(output, 0, output_tmp, 0, output.Length);
+            Debug.Log(output_tmp.Length);
+
         }, error =>
         {
-            Debug.Log(error.Message);
             // TODO: when i am not lazy
         });
     }
@@ -324,11 +352,17 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     /// <param name="fileName"></param>
     public void ExportSketch(string targetDirectory, string fileName)
     {
+       // tmp_text = new Texture2D(256, 256, TextureFormat.RGBA32, false);
+        //this.tmp_text.LoadImage(output_tmp);
+        //this.tmp_text.Apply();
+        //m_image.texture = this.tmp_text;
+
         var dt = DateTime.Now.ToString("yyMMdd_hhmmss");
         fileName += $"_{dt}";
 
         targetDirectory = Path.Combine(targetDirectory, "Pixel Drawings");
 
+        /*
         var mainTex = m_image.texture;
         var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
 
@@ -349,7 +383,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         mainTex = null;
 
         var png = tex2d.EncodeToPNG();
-
+        */
         if (!Directory.Exists(targetDirectory))
             Directory.CreateDirectory(targetDirectory);
 
@@ -358,7 +392,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         if (File.Exists(fp))
             File.Delete(fp);
 
-        File.WriteAllBytes(fp, png);
+        File.WriteAllBytes(fp, output_tmp);
 
         System.Diagnostics.Process.Start(targetDirectory);
     }

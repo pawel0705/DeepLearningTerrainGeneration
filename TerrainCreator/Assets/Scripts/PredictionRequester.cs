@@ -8,7 +8,7 @@ public class PredictionRequester : RunAbleThread
 {
     public RequestSocket client;
 
-    private Action<float[]> onOutputReceived;
+    private Action<byte[]> onOutputReceived;
     private Action<Exception> onFail;
 
     protected override void Run()
@@ -46,9 +46,7 @@ public class PredictionRequester : RunAbleThread
 
                 if (gotMessage)
                 {
-                    var output = new float[outputBytes.Length / 4];
-                    Buffer.BlockCopy(outputBytes, 0, output, 0, outputBytes.Length);
-                    onOutputReceived?.Invoke(output);
+                    onOutputReceived?.Invoke(outputBytes);
                 }
             }
         }
@@ -58,8 +56,6 @@ public class PredictionRequester : RunAbleThread
 
     public void SendInput(byte[] input)
     {
-        Debug.Log("w inpucie");
-        Debug.Log(input.Length);
         try
         {
            // var byteArray = new byte[input.Length * 4];
@@ -72,7 +68,7 @@ public class PredictionRequester : RunAbleThread
         }
     }
 
-    public void SetOnTextReceivedListener(Action<float[]> onOutputReceived, Action<Exception> fallback)
+    public void SetOnTextReceivedListener(Action<byte[]> onOutputReceived, Action<Exception> fallback)
     {
         this.onOutputReceived = onOutputReceived;
         onFail = fallback;

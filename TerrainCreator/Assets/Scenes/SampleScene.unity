@@ -871,7 +871,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 371297318}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 66, y: 199, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -894,10 +894,10 @@ MonoBehaviour:
     startingHeight: 0
     overlap: 0
   - textureIndex: 1
-    startingHeight: 40
+    startingHeight: 80
     overlap: 10
   - textureIndex: 2
-    startingHeight: 80
+    startingHeight: 120
     overlap: 10
 --- !u!1 &471765747
 GameObject:
@@ -1667,7 +1667,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -1691,13 +1691,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalRotation: {x: 0.4274911, y: -0, z: -0, w: 0.90401953}
+  m_LocalPosition: {x: 207, y: 567, z: -57}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 50.617, y: 0, z: 0}
 --- !u!1 &1108406599
 GameObject:
   m_ObjectHideFlags: 0
@@ -2748,6 +2748,7 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   penPointer: {fileID: 115754965}
+  terrain: {fileID: 371297320}
   IsEraser: 0
 --- !u!114 &1876837163
 MonoBehaviour:
