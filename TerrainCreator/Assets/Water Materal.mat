@@ -88,7 +88,7 @@ Material:
     - _StencilWriteMaskDistortionVec: 4
     - _StencilWriteMaskGBuffer: 14
     - _StencilWriteMaskMV: 40
-    - _Strength: 0.87
+    - _Strength: 0.13
     - _SupportDecals: 1
     - _SurfaceType: 1
     - _TransparentBackfaceEnable: 0
@@ -104,10 +104,10 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 0
     m_Colors:
-    - _DeepWaterColor: {r: 0, g: 1, b: 0.99279135, a: 0.2901961}
+    - _DeepWaterColor: {r: 0.49433953, g: 0.884013, b: 1, a: 0.15686275}
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShallowWaterColor: {r: 0.07058821, g: 0.8016594, b: 1, a: 0.76862746}
+    - _ShallowWaterColor: {r: 0.47547168, g: 0.9368191, b: 1, a: 0.76862746}
   m_BuildTextureStacks: []
 --- !u!114 &8230279506952395342
 MonoBehaviour:

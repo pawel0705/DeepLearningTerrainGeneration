@@ -19,6 +19,9 @@ public class GuiPaletteView : MonoBehaviour
     private Toggle eraser;
 
     [SerializeField]
+    private Toggle constantPrediction;
+
+    [SerializeField]
     private Button clearButton, exportButton, exitButton, predictionButton;
 
     [SerializeField]
@@ -39,6 +42,7 @@ public class GuiPaletteView : MonoBehaviour
 
         penWidth.onValueChanged.AddListener(OnPenWidthChanged);
         eraser.onValueChanged.AddListener(OnEraserToggled);
+        constantPrediction.onValueChanged.AddListener(OnConstantPredictionToggled);
         clearButton.onClick.AddListener(OnClearDrawing);
         exportButton.onClick.AddListener(OnExportDrawing);
         exitButton.onClick.AddListener(OnExit);
@@ -67,6 +71,7 @@ public class GuiPaletteView : MonoBehaviour
 
         penWidth.onValueChanged.RemoveListener(OnPenWidthChanged);
         eraser.onValueChanged.RemoveListener(OnEraserToggled);
+        constantPrediction.onValueChanged.RemoveListener(OnConstantPredictionToggled);
         clearButton.onClick.RemoveListener(OnClearDrawing);
         exportButton.onClick.RemoveListener(OnExportDrawing);
         exitButton.onClick.RemoveListener(OnExit);
@@ -86,6 +91,11 @@ public class GuiPaletteView : MonoBehaviour
     private void OnEraserToggled(bool value)
     {
         MouseDrawComponent.IsEraser = value;
+    }
+
+    private void OnConstantPredictionToggled(bool value)
+    {
+        MouseDrawComponent.IsConstantDrawPrediction = value;
     }
 
     private void OnClearDrawing()

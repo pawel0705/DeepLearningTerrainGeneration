@@ -15,6 +15,7 @@ public class PredictionRequester : RunAbleThread
     {
         ForceDotNet.Force(); // this line is needed to prevent unity freeze after one use, not sure why yet
 
+        
         using (RequestSocket client = new RequestSocket())
         {
             this.client = client;
@@ -39,7 +40,7 @@ public class PredictionRequester : RunAbleThread
                     }
                     catch (Exception e)
                     {
-                        Debug.Log(e.Message);
+                       // Debug.Log(e.Message);
                     }
 
                 }
@@ -50,7 +51,7 @@ public class PredictionRequester : RunAbleThread
                 }
             }
         }
-
+        
         NetMQConfig.Cleanup(); // this line is needed to prevent unity freeze after one use, not sure why yet
     }
 
