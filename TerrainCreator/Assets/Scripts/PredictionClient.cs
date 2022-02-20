@@ -5,32 +5,25 @@ public class PredictionClient : MonoBehaviour
 {
     private PredictionRequester predictionRequester;
 
-    // Start is called before the first frame update
     void Start()
     {
         InitializeServer();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        predictionRequester.UpdateResult();
     }
 
     public void InitializeServer()
     {
         predictionRequester = new PredictionRequester();
-        predictionRequester.Start();
+        predictionRequester.Intitialize();
     }
 
     public void Predict(byte[] input, Action<byte[]> onOutputReceived, Action<Exception> fallback)
     {
         predictionRequester.SetOnTextReceivedListener(onOutputReceived, fallback);
         predictionRequester.SendInput(input);
-    }
-
-    private void OnDestroy()
-    {
-        predictionRequester.Stop();
     }
 }

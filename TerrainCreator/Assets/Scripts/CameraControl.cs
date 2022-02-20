@@ -5,15 +5,28 @@ using UnityEngine.EventSystems;
 
 public class CameraControl : MonoBehaviour
 {
-    public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
-    public RotationAxes axes = RotationAxes.MouseXAndY;
-    public float sensitivityX = 2F;
-    public float sensitivityY = 2F;
-    public float minimumX = -360F;
-    public float maximumX = 360F;
-    public float minimumY = -90F;
-    public float maximumY = 90F;
-    float rotationY = -90F;
+    private enum RotationAxes 
+    { 
+        MouseXAndY = 0, 
+        MouseX = 1, 
+        MouseY = 2 
+    }
+
+    private RotationAxes axes = RotationAxes.MouseXAndY;
+
+    private float sensitivityX = 2F;
+
+    private float sensitivityY = 2F;
+
+    private float minimumX = -360F;
+
+    private float maximumX = 360F;
+
+    private float minimumY = -90F;
+
+    private float maximumY = 90F;
+
+    private float rotationY = -90F;
 
     void Update()
     {
@@ -122,6 +135,7 @@ public class CameraControl : MonoBehaviour
             pos = pos - transform.forward * 4f;
             transform.position = pos;
         }
+
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
             pos = pos + transform.forward * 4f;

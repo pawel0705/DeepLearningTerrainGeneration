@@ -22,18 +22,31 @@ public class GuiPaletteView : MonoBehaviour
     private Toggle constantPrediction;
 
     [SerializeField]
-    private Button clearButton, exportButton, exitButton, predictionButton;
+    private Button clearButton, exportSketchButton, exportHeightmapButton, exitButton, predictionButton;
 
     [SerializeField]
     private string SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
     [SerializeField]
-    private string FileName = "MyImage";
+    private string FileName = "TerrainAI";
+
+    void Start()
+    {
+        OnPenWidthChanged(penWidth.value);
+        OnPenColourChanged(Color.red);
+    }
+
+    void Update()
+    {
+        
+    }
 
     private void OnEnable()
     {
         if (!Directory.Exists(SaveDirectory))
+        {
             SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        }
 
         Swatch1.ColourChanged += OnPenColourChanged;
         Swatch2.ColourChanged += OnPenColourChanged;
@@ -44,24 +57,11 @@ public class GuiPaletteView : MonoBehaviour
         eraser.onValueChanged.AddListener(OnEraserToggled);
         constantPrediction.onValueChanged.AddListener(OnConstantPredictionToggled);
         clearButton.onClick.AddListener(OnClearDrawing);
-        exportButton.onClick.AddListener(OnExportDrawing);
+        exportSketchButton.onClick.AddListener(OnExportSketchDrawing);
+        exportHeightmapButton.onClick.AddListener(OnExportHeightmapDrawing);
         exitButton.onClick.AddListener(OnExit);
         predictionButton.onClick.AddListener(OnPrediction);
     }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        OnPenWidthChanged(penWidth.value);
-        OnPenColourChanged(Color.red);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnDisable()
     {
         Swatch1.ColourChanged -= OnPenColourChanged;
@@ -73,7 +73,8 @@ public class GuiPaletteView : MonoBehaviour
         eraser.onValueChanged.RemoveListener(OnEraserToggled);
         constantPrediction.onValueChanged.RemoveListener(OnConstantPredictionToggled);
         clearButton.onClick.RemoveListener(OnClearDrawing);
-        exportButton.onClick.RemoveListener(OnExportDrawing);
+        exportSketchButton.onClick.RemoveListener(OnExportSketchDrawing);
+        exportHeightmapButton.onClick.RemoveListener(OnExportHeightmapDrawing);
         exitButton.onClick.RemoveListener(OnExit);
         predictionButton.onClick.RemoveListener(OnPrediction);
     }
@@ -81,6 +82,8 @@ public class GuiPaletteView : MonoBehaviour
     private void OnPenColourChanged(Color32 colour)
     {
         MouseDrawComponent.SetPenColour(colour);
+        eraser.isOn = false;
+        OnEraserToggled(false);
     }
 
     private void OnPenWidthChanged(float value)
@@ -103,9 +106,14 @@ public class GuiPaletteView : MonoBehaviour
         MouseDrawComponent.ClearTexture();
     }
 
-    private void OnExportDrawing()
+    private void OnExportSketchDrawing()
     {
         MouseDrawComponent.ExportSketch(SaveDirectory, FileName);
+    }
+
+    private void OnExportHeightmapDrawing()
+    {
+        MouseDrawComponent.ExportHeightmap(SaveDirectory, FileName);
     }
 
     private void OnPrediction()

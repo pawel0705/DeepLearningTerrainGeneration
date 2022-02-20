@@ -6,46 +6,47 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
 public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public bool IsEraser = false;
+
+    public bool IsConstantDrawPrediction = true;
+
+    public Color32 penColour = new Color32(0, 0, 0, 255);
+
+    public Color32 backroundColour = new Color32(0, 0, 0, 255);
+
+    [Serializable]
+    public class SplatHeights
+    {
+        public int textureIndex;
+        public int startingHeight;
+        public int overlap;
+    }
+
+    public SplatHeights[] splatHeights;
+
     [SerializeField]
-    [Tooltip("The Canvas which is a parent to this Mouse Drawing Component")]
     private Canvas HostCanvas;
 
     [SerializeField]
     private PredictionClient client;
 
     [Range(1, 20)]
-    [Tooltip("The Pens Radius")]
     public int penRadius = 1;
 
-    [Tooltip("The Pens Colour.")]
-    public Color32 penColour = new Color32(0, 0, 0, 255);
-
-    [Tooltip("The Drawing Background Colour.")]
-    public Color32 backroundColour = new Color32(0, 0, 0, 255);
-
     [SerializeField]
-    [Tooltip("Pen Pointer Graphic GameObject")]
     private Image penPointer;
 
     [SerializeField]
     private Terrain terrain;
-
-    [Tooltip("Toggles between Pen and Eraser.")]
-    public bool IsEraser = false;
-
-    public bool IsConstantDrawPrediction = true;
 
     private bool _isInFocus = false;
 
     private byte[] output_tmp;
 
     private bool predicted = false;
-    /// <summary>
-    /// Is this Component in focus.
-    /// </summary>
+
     public bool IsInFocus
     {
         get => _isInFocus;
@@ -59,27 +60,17 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    private float m_scaleFactor = 10;
     private RawImage m_image;
 
     private Vector2? m_lastPos;
 
     public RawImage m_image_heightmap;
 
-    // Start is called before the first frame update
     void Start()
     {
         Init();
     }
 
-    private void OnEnable()
-    {
-        m_image = transform.GetComponent<RawImage>();
-        TogglePenPointerVisibility(false);
-    }
-
-
-    // Update is called once per frame
     void Update()
     {
         var pos = Input.mousePosition;
@@ -89,54 +80,62 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             SetPenPointerPosition(pos);
 
             if (Input.GetMouseButton(0))
+            {
                 WritePixels(pos);
+            }
         }
 
         if (Input.GetMouseButtonUp(0))
-            m_lastPos = null;
-
-        if(predicted == true)
         {
-            var tex2d = new Texture2D(256, 256, TextureFormat.RGB24, false);
-            var startPoint = 0;
-            for (var x = 0; x < 256; x++)
-            {
-                for (var y = 0; y < 256; y++)
-                {
-                    tex2d.SetPixel(x, y, new Color(output_tmp[startPoint] / 255.0f, output_tmp[startPoint + 1] / 255.0f, output_tmp[startPoint + 2] / 255.0f));
-                    startPoint += 3;
-                }
-            }
+            m_lastPos = null;
+        }
 
-            tex2d.Apply();
-            m_image_heightmap.texture = tex2d;
-
-            var heights = new float[256, 256];
-            for (int x = 0; x < 256; x++)
-            {
-                for (int y = 0; y < 256; y++)
-                {
-                    heights[x, y] = tex2d.GetPixel(y, x).grayscale * 0.6f;
-                }
-            }
-            terrain.terrainData.SetHeights(0, 0, heights);
-
-            RepaintTerrain();
-
-            predicted = false;
+        if (predicted == true)
+        {
+            Debug.Log("Predicted");
+            RebuildTerrain();
         }
     }
 
-    /// <summary>
-    /// Initialisation logic.
-    /// </summary>
+    private void OnEnable()
+    {
+        m_image = transform.GetComponent<RawImage>();
+        TogglePenPointerVisibility(false);
+    }
+
+    private void RebuildTerrain()
+    {
+        var tex2d = new Texture2D(256, 256, TextureFormat.RGB24, false);
+        var startPoint = 0;
+        for (var x = 0; x < 256; x++)
+        {
+            for (var y = 0; y < 256; y++)
+            {
+                tex2d.SetPixel(x, y, new Color(output_tmp[startPoint] / 255.0f, output_tmp[startPoint + 1] / 255.0f, output_tmp[startPoint + 2] / 255.0f));
+                startPoint += 3;
+            }
+        }
+
+        tex2d.Apply();
+        m_image_heightmap.texture = tex2d;
+
+        var heights = new float[256, 256];
+        for (int x = 0; x < 256; x++)
+        {
+            for (int y = 0; y < 256; y++)
+            {
+                heights[x, y] = tex2d.GetPixel(y, x).grayscale * 0.6f;
+            }
+        }
+        terrain.terrainData.SetHeights(0, 0, heights);
+
+        RepaintTerrain();
+
+        predicted = false;
+    }
+
     private void Init()
     {
-        // Set scale Factor...
-        m_scaleFactor = HostCanvas.scaleFactor * 2;
-
-        // var tex = new Texture2D(Convert.ToInt32(Screen.width / m_scaleFactor), Convert.ToInt32(Screen.height / m_scaleFactor), TextureFormat.RGBA32, false);
-
         var tex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
         for (int i = 0; i < tex.width; i++)
         {
@@ -150,10 +149,6 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         m_image.texture = tex;
     }
 
-    /// <summary>
-    /// Writes the pixels to the Texture at the given ScreenSpace position.
-    /// </summary>
-    /// <param name="pos"></param>
     private void WritePixels(Vector2 pos)
     {
         var mainTex = m_image.texture;
@@ -169,15 +164,19 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         var col = IsEraser ? backroundColour : penColour;
 
-        var positions =  m_lastPos.HasValue ? GetLinearPositions(m_lastPos.Value, pos) : new List<Vector2>() { pos };
+        var positions = m_lastPos.HasValue ? GetLinearPositions(m_lastPos.Value, pos) : new List<Vector2>() { pos };
 
         foreach (var position in positions)
         {
             var pixels = GetNeighbouringPixels(new Vector2(mainTex.width, mainTex.height), position, penRadius);
 
             if (pixels.Count > 0)
+            {
                 foreach (var p in pixels)
+                {
                     tex2d.SetPixel((int)p.x, (int)p.y, col);
+                }
+            }
         }
 
         tex2d.Apply();
@@ -193,17 +192,12 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         m_image.texture = tex2d;
         m_lastPos = pos;
 
-
         if (IsConstantDrawPrediction == true)
         {
             Predict();
         }
     }
 
-    /// <summary>
-    /// Clears the Texture.
-    /// </summary>
-    [ContextMenu("Clear Texture")]
     public void ClearTexture()
     {
         var mainTex = m_image.texture;
@@ -216,18 +210,13 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 tex2d.SetPixel(i, j, backroundColour);
             }
         }
-        
+
         tex2d.Apply();
         m_image.texture = tex2d;
+
+        Predict();
     }
 
-    /// <summary>
-    /// Gets the neighbouring pixels at a given screenspace position.
-    /// </summary>
-    /// <param name="textureSize">The texture size or pixel domain.</param>
-    /// <param name="position">The ScreenSpace position.</param>
-    /// <param name="brushRadius">The Brush radius.</param>
-    /// <returns>List of pixel positions.</returns>
     private List<Vector2> GetNeighbouringPixels(Vector2 textureSize, Vector2 position, int brushRadius)
     {
         var pixels = new List<Vector2>();
@@ -238,20 +227,15 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             {
                 var pxl = new Vector2(position.x + i, position.y + j);
                 if (pxl.x > 0 && pxl.x < textureSize.x && pxl.y > 0 && pxl.y < textureSize.y)
+                {
                     pixels.Add(pxl);
+                }
             }
         }
 
         return pixels;
     }
 
-    /// <summary>
-    /// Interpolates between two positions with a spacing (default = 2)
-    /// </summary>
-    /// <param name="firstPos"></param>
-    /// <param name="secondPos"></param>
-    /// <param name="spacing"></param>
-    /// <returns>List of interpolated positions</returns>
     private List<Vector2> GetLinearPositions(Vector2 firstPos, Vector2 secondPos, int spacing = 2)
     {
         var positions = new List<Vector2>();
@@ -274,60 +258,34 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         return positions;
     }
 
-    /// <summary>
-    /// Sets the Pens Colour.
-    /// </summary>
-    /// <param name="color"></param>
     public void SetPenColour(Color32 color) => penColour = color;
 
-    /// <summary>
-    /// Sets the Radius of the Pen.
-    /// </summary>
-    /// <param name="radius"></param>
     public void SetPenRadius(int radius) => penRadius = radius;
 
-    /// <summary>
-    /// Sets the Size of the Pen Pointer.
-    /// </summary>
     private void SetPenPointerSize()
     {
         var rt = penPointer.rectTransform;
-        //rt.sizeDelta = new Vector2(penRadius * 25, penRadius * 25);
         rt.sizeDelta = new Vector2(25, 25);
     }
 
-    /// <summary>
-    /// Sets the position of the Pen Pointer Graphic.
-    /// </summary>
-    /// <param name="pos"></param>
     private void SetPenPointerPosition(Vector2 pos)
     {
         penPointer.transform.position = pos;
     }
 
-    /// <summary>
-    /// Toggles the visibility of the Pen Pointer Graphic.
-    /// </summary>
-    /// <param name="isVisible"></param>
     private void TogglePenPointerVisibility(bool isVisible)
     {
         if (isVisible)
+        {
             SetPenPointerSize();
+        }
 
         penPointer.gameObject.SetActive(isVisible);
         Cursor.visible = !isVisible;
     }
 
-    /// <summary>
-    /// On Mouse Pointer entering this Components Image Space.
-    /// </summary>
-    /// <param name="eventData"></param>
     public void OnPointerEnter(PointerEventData eventData) => IsInFocus = true;
 
-    /// <summary>
-    /// On Mouse Pointer exiting this Components Image Space.
-    /// </summary>
-    /// <param name="eventData"></param>
     public void OnPointerExit(PointerEventData eventData) => IsInFocus = false;
 
     public void Predict()
@@ -365,24 +323,13 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         });
     }
 
-    /// <summary>
-    /// Exports the Sketch as a PNG.
-    /// </summary>
-    /// <param name="targetDirectory"></param>
-    /// <param name="fileName"></param>
     public void ExportSketch(string targetDirectory, string fileName)
     {
-       // tmp_text = new Texture2D(256, 256, TextureFormat.RGBA32, false);
-        //this.tmp_text.LoadImage(output_tmp);
-        //this.tmp_text.Apply();
-        //m_image.texture = this.tmp_text;
-
         var dt = DateTime.Now.ToString("yyMMdd_hhmmss");
-        fileName += $"_{dt}";
+        fileName += $"_s_{dt}";
 
-        targetDirectory = Path.Combine(targetDirectory, "Pixel Drawings");
-
-        /*
+        targetDirectory = Path.Combine(targetDirectory, "TerrainAI");
+   
         var mainTex = m_image.texture;
         var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
 
@@ -403,29 +350,68 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         mainTex = null;
 
         var png = tex2d.EncodeToPNG();
-        */
+        
         if (!Directory.Exists(targetDirectory))
+        {
             Directory.CreateDirectory(targetDirectory);
+        }
 
         var fp = Path.Combine(targetDirectory, fileName + ".png");
 
         if (File.Exists(fp))
+        {
             File.Delete(fp);
+        }
 
-        File.WriteAllBytes(fp, output_tmp);
+        File.WriteAllBytes(fp, png);
 
         System.Diagnostics.Process.Start(targetDirectory);
     }
 
-    [System.Serializable]
-    public class SplatHeights
+    public void ExportHeightmap(string targetDirectory, string fileName)
     {
-        public int textureIndex;
-        public int startingHeight;
-        public int overlap;
-    }
+        var dt = DateTime.Now.ToString("yyMMdd_hhmmss");
+        fileName += $"_h_{dt}";
 
-    public SplatHeights[] splatHeights;
+        targetDirectory = Path.Combine(targetDirectory, "TerrainAI");
+
+        var mainTex = m_image_heightmap.texture;
+        var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
+
+        var curTex = RenderTexture.active;
+        var renTex = new RenderTexture(mainTex.width, mainTex.height, 32);
+
+        Graphics.Blit(mainTex, renTex);
+        RenderTexture.active = renTex;
+
+        tex2d.ReadPixels(new Rect(0, 0, mainTex.width, mainTex.height), 0, 0);
+
+        tex2d.Apply();
+
+        RenderTexture.active = curTex;
+        Destroy(renTex);
+        curTex = null;
+        renTex = null;
+        mainTex = null;
+
+        var png = tex2d.EncodeToPNG();
+
+        if (!Directory.Exists(targetDirectory))
+        {
+            Directory.CreateDirectory(targetDirectory);
+        }
+
+        var fp = Path.Combine(targetDirectory, fileName + ".png");
+
+        if (File.Exists(fp))
+        {
+            File.Delete(fp);
+        }
+
+        File.WriteAllBytes(fp, png);
+
+        System.Diagnostics.Process.Start(targetDirectory);
+    }
 
     private void RepaintTerrain()
     {

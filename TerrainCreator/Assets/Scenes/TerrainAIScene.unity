@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 9093.707, g: 8198.727, b: 7507.207, a: 1}
+  m_IndirectSpecularColor: {r: 9096.181, g: 8201.941, b: 7511.9805, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1222,8 +1222,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 338323256}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 173.5252, y: -97.648895, z: -75.29149}
-  m_LocalScale: {x: 260, y: 20, z: 260}
+  m_LocalPosition: {x: 174.7334, y: -97.648895, z: -75.29149}
+  m_LocalScale: {x: 262.4317, y: 20, z: 260}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1614911901}
@@ -1272,7 +1272,7 @@ Terrain:
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
   m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 80
+  m_DetailObjectDistance: 233
   m_DetailObjectDensity: 1
   m_HeightmapPixelError: 5
   m_SplatMapDistance: 2354
@@ -7171,8 +7171,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 905088769}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 191.4, y: 206.5, z: 126.9}
-  m_LocalScale: {x: 25.5, y: 1, z: 25.5}
+  m_LocalPosition: {x: 192.2654, y: 206.5, z: 126.9}
+  m_LocalScale: {x: 25.6734, y: 1, z: 25.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -7810,7 +7810,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1281640361}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 301.4, y: -84.2609, z: -75.29149}
+  m_LocalPosition: {x: 303.72522, y: -84.2609, z: -75.29149}
   m_LocalScale: {x: 4.257461, y: 14.077778, z: 260}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8169,7 +8169,7 @@ GameObject:
   - component: {fileID: 1448657587}
   - component: {fileID: 1448657586}
   m_Layer: 5
-  m_Name: btn_Export (1)
+  m_Name: btn_ExportHeightmap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8341,7 +8341,7 @@ GameObject:
   - component: {fileID: 1515694294}
   - component: {fileID: 1515694293}
   m_Layer: 5
-  m_Name: btn_Export
+  m_Name: btn_ExportSketch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8950,11 +8950,12 @@ MonoBehaviour:
   eraser: {fileID: 275979033}
   constantPrediction: {fileID: 83946495}
   clearButton: {fileID: 1795011885}
-  exportButton: {fileID: 1515694293}
+  exportSketchButton: {fileID: 1515694293}
+  exportHeightmapButton: {fileID: 1448657586}
   exitButton: {fileID: 1515893587}
   predictionButton: {fileID: 1583023206}
   SaveDirectory: C:\Users\pawel\OneDrive\Pulpit
-  FileName: MyImage
+  FileName: ImageTerrain
 --- !u!1 &1754833486
 GameObject:
   m_ObjectHideFlags: 0
@@ -9335,22 +9336,22 @@ MonoBehaviour:
   splatHeights:
   - textureIndex: 0
     startingHeight: 0
-    overlap: 5
-  - textureIndex: 0
-    startingHeight: 5
-    overlap: 5
+    overlap: 4
   - textureIndex: 0
     startingHeight: 10
-    overlap: 5
+    overlap: 4
   - textureIndex: 0
-    startingHeight: 15
-    overlap: 5
+    startingHeight: 16
+    overlap: 4
   - textureIndex: 0
-    startingHeight: 20
-    overlap: 5
+    startingHeight: 24
+    overlap: 4
   - textureIndex: 0
-    startingHeight: 25
-    overlap: 5
+    startingHeight: 30
+    overlap: 4
+  - textureIndex: 0
+    startingHeight: 36
+    overlap: 4
 --- !u!114 &1876837163
 MonoBehaviour:
   m_ObjectHideFlags: 0

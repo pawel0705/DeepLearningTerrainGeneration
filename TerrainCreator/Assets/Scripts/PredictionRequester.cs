@@ -4,68 +4,81 @@ using NetMQ;
 using NetMQ.Sockets;
 using UnityEngine;
 
-public class PredictionRequester : RunAbleThread
+public class PredictionRequester
 {
     public RequestSocket client;
 
     private Action<byte[]> onOutputReceived;
     private Action<Exception> onFail;
 
-    protected override void Run()
+    private bool canSendNext = true;
+    private int cantSendIterator = 0;
+    private int cantSendMax = 25;
+
+    private string connectionString = "tcp://localhost:5555";
+
+
+    public void Intitialize()
     {
-        ForceDotNet.Force(); // this line is needed to prevent unity freeze after one use, not sure why yet
+        RequestSocket client = new RequestSocket();
 
-        
-        using (RequestSocket client = new RequestSocket())
+        this.client = client;
+        client.Connect(connectionString);
+    }
+
+    public void UpdateResult()
+    {
+        byte[] outputBytes = new byte[0];
+        bool gotMessage = false;
+
+        if (canSendNext == false)
         {
-            this.client = client;
-            client.Connect("tcp://localhost:5555");
-
-            while (Running)
+            try
             {
-                byte[] outputBytes = new byte[0];
-                bool gotMessage = false;
-
-                while (Running)
-                {
-
-                    try
-                    {
-                        gotMessage = client.TryReceiveFrameBytes(out outputBytes);  // this returns true if it's successful
-
-                        if (gotMessage)
-                        {
-                            break;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                       // Debug.Log(e.Message);
-                    }
-
-                }
-
-                if (gotMessage)
-                {
-                    onOutputReceived?.Invoke(outputBytes);
-                }
+                gotMessage = client.TryReceiveFrameBytes(out outputBytes);  // this returns true if it's successful
+            }
+            catch (Exception e)
+            {
+                // TODO
             }
         }
-        
-        NetMQConfig.Cleanup(); // this line is needed to prevent unity freeze after one use, not sure why yet
+
+        if (gotMessage)
+        {
+            Debug.Log("GotMessage");
+            onOutputReceived?.Invoke(outputBytes);
+            canSendNext = true;
+            cantSendIterator = 0;
+        }
     }
 
     public void SendInput(byte[] input)
     {
         try
         {
-           // var byteArray = new byte[input.Length * 4];
-           // Buffer.BlockCopy(input, 0, byteArray, 0, byteArray.Length);
-            client.SendFrame(input);
+            if(cantSendIterator > cantSendMax)
+            {
+                cantSendIterator = 0;
+                canSendNext = true;
+            }
+
+            if (canSendNext == true)
+            {
+                canSendNext = false;
+                client.SendFrame(input);
+            }
+            else
+            {
+                cantSendIterator++;
+            }
         }
         catch (Exception ex)
         {
             onFail(ex);
+            client.Close();
+            client = new RequestSocket();
+            client.Connect(connectionString);
+            cantSendIterator = 0;
         }
     }
 
