@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class PredictionClient : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject loading;
+
     private PredictionRequester predictionRequester;
 
     void Start()
@@ -18,6 +21,7 @@ public class PredictionClient : MonoBehaviour
     public void InitializeServer()
     {
         predictionRequester = new PredictionRequester();
+        predictionRequester.loading = loading;
         predictionRequester.Intitialize();
     }
 

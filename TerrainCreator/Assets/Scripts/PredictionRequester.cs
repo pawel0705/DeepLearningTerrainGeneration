@@ -8,6 +8,8 @@ public class PredictionRequester
 {
     public RequestSocket client;
 
+    public GameObject loading;
+
     private Action<byte[]> onOutputReceived;
     private Action<Exception> onFail;
 
@@ -49,11 +51,13 @@ public class PredictionRequester
             onOutputReceived?.Invoke(outputBytes);
             canSendNext = true;
             cantSendIterator = 0;
+            loading.SetActive(false);
         }
     }
 
     public void SendInput(byte[] input)
     {
+        Debug.Log("SendInput");
         try
         {
             if(cantSendIterator > cantSendMax)
@@ -64,7 +68,9 @@ public class PredictionRequester
 
             if (canSendNext == true)
             {
+                Debug.Log("CanSendNext");
                 canSendNext = false;
+                loading.SetActive(true);
                 client.SendFrame(input);
             }
             else
@@ -74,6 +80,7 @@ public class PredictionRequester
         }
         catch (Exception ex)
         {
+            Debug.Log(ex);
             onFail(ex);
             client.Close();
             client = new RequestSocket();
