@@ -35,7 +35,6 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     [Range(1, 20)]
     public int penRadius = 1;
 
-    [SerializeField]
     private Image penPointer;
 
     [SerializeField]
@@ -46,6 +45,9 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private byte[] output_tmp;
 
     private bool predicted = false;
+
+    [SerializeField]
+    private Image penPointerBlack, penPointerRed, penPointerBlue, penPointerGreen;
 
     public bool IsInFocus
     {
@@ -258,7 +260,28 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         return positions;
     }
 
-    public void SetPenColour(Color32 color) => penColour = color;
+    public void SetPenColour(Color32 color)
+    {
+        penColour = color;
+        Debug.Log(color);
+
+        if (penColour.r == 0 && penColour.g == 0 && penColour.b == 0)
+        {
+            penPointer = penPointerBlack;
+        }
+        else if (penColour.r == 255)
+        {
+            penPointer = penPointerRed;
+        }
+        else if (penColour.g == 255)
+        {
+            penPointer = penPointerGreen;
+        }
+        else if (penColour.b == 255)
+        {
+            penPointer = penPointerBlue;
+        }
+    }
 
     public void SetPenRadius(int radius) => penRadius = radius;
 
@@ -329,7 +352,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         fileName += $"_s_{dt}";
 
         targetDirectory = Path.Combine(targetDirectory, "TerrainAI");
-   
+
         var mainTex = m_image.texture;
         var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
 
@@ -350,7 +373,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         mainTex = null;
 
         var png = tex2d.EncodeToPNG();
-        
+
         if (!Directory.Exists(targetDirectory))
         {
             Directory.CreateDirectory(targetDirectory);

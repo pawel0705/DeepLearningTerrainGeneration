@@ -104,10 +104,10 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 0
     m_Colors:
-    - _DeepWaterColor: {r: 0.49433953, g: 0.884013, b: 1, a: 0.15686275}
+    - _DeepWaterColor: {r: 0.49433947, g: 0.884013, b: 1, a: 0.07058824}
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShallowWaterColor: {r: 0.47547168, g: 0.9368191, b: 1, a: 0.76862746}
+    - _ShallowWaterColor: {r: 0.47547156, g: 0.9368191, b: 1, a: 0.7882353}
   m_BuildTextureStacks: []
 --- !u!114 &8230279506952395342
 MonoBehaviour:
