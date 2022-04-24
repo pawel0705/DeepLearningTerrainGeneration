@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetMQ;
+using System;
 using UnityEngine;
 
 public class PredictionClient : MonoBehaviour
@@ -29,5 +30,10 @@ public class PredictionClient : MonoBehaviour
     {
         predictionRequester.SetOnTextReceivedListener(onOutputReceived, fallback);
         predictionRequester.SendInput(input);
+    }
+
+    void OnApplicationQuit()
+    {
+        this.predictionRequester.ClearConnection();
     }
 }

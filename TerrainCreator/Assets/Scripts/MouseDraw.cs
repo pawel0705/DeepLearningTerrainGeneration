@@ -49,6 +49,14 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     [SerializeField]
     private Image penPointerBlack, penPointerRed, penPointerBlue, penPointerGreen;
 
+    [SerializeField]
+    private Button btn128, btn256, btn512;
+
+    [SerializeField]
+    private GameObject sketchTexture, heightmapTexture;
+
+    private int basicSize = 256;
+
     public bool IsInFocus
     {
         get => _isInFocus;
@@ -103,15 +111,27 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         m_image = transform.GetComponent<RawImage>();
         TogglePenPointerVisibility(false);
+
+        Debug.Log("On enable");
+        btn128.onClick.AddListener(On128x128Change);
+        btn256.onClick.AddListener(On256x256Change);
+        btn512.onClick.AddListener(On512x512Change);
+    }
+
+    private void OnDisable()
+    {
+        btn128.onClick.RemoveListener(On128x128Change);
+        btn256.onClick.RemoveListener(On256x256Change);
+        btn512.onClick.RemoveListener(On512x512Change);
     }
 
     private void RebuildTerrain()
     {
-        var tex2d = new Texture2D(256, 256, TextureFormat.RGB24, false);
+        var tex2d = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGB24, false);
         var startPoint = 0;
-        for (var x = 0; x < 256; x++)
+        for (var x = 0; x < this.basicSize; x++)
         {
-            for (var y = 0; y < 256; y++)
+            for (var y = 0; y < this.basicSize; y++)
             {
                 tex2d.SetPixel(x, y, new Color(output_tmp[startPoint] / 255.0f, output_tmp[startPoint + 1] / 255.0f, output_tmp[startPoint + 2] / 255.0f));
                 startPoint += 3;
@@ -121,10 +141,10 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         tex2d.Apply();
         m_image_heightmap.texture = tex2d;
 
-        var heights = new float[256, 256];
-        for (int x = 0; x < 256; x++)
+        var heights = new float[this.basicSize, this.basicSize];
+        for (int x = 0; x < this.basicSize; x++)
         {
-            for (int y = 0; y < 256; y++)
+            for (int y = 0; y < this.basicSize; y++)
             {
                 heights[x, y] = tex2d.GetPixel(y, x).grayscale * 0.6f;
             }
@@ -138,7 +158,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private void Init()
     {
-        var tex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
+        var tex = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGBA32, false);
         for (int i = 0; i < tex.width; i++)
         {
             for (int j = 0; j < tex.height; j++)
@@ -154,15 +174,16 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private void WritePixels(Vector2 pos)
     {
         var mainTex = m_image.texture;
-        var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
+
+        var tex2d = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGBA32, false);
 
         var curTex = RenderTexture.active;
-        var renTex = new RenderTexture(mainTex.width, mainTex.height, 32);
+        var renTex = new RenderTexture(this.basicSize, this.basicSize, 32);
 
         Graphics.Blit(mainTex, renTex);
         RenderTexture.active = renTex;
 
-        tex2d.ReadPixels(new Rect(0, 0, mainTex.width, mainTex.height), 0, 0);
+        tex2d.ReadPixels(new Rect(0, 0, this.basicSize, this.basicSize), 0, 0);
 
         var col = IsEraser ? backroundColour : penColour;
 
@@ -170,7 +191,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         foreach (var position in positions)
         {
-            var pixels = GetNeighbouringPixels(new Vector2(mainTex.width, mainTex.height), position, penRadius);
+            var pixels = GetNeighbouringPixels(new Vector2(this.basicSize, this.basicSize), position, penRadius);
 
             if (pixels.Count > 0)
             {
@@ -180,6 +201,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 }
             }
         }
+
 
         tex2d.Apply();
 
@@ -203,7 +225,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void ClearTexture()
     {
         var mainTex = m_image.texture;
-        var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGB24, false);
+        var tex2d = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGB24, false);
 
         for (int i = 0; i < tex2d.width; i++)
         {
@@ -263,7 +285,6 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void SetPenColour(Color32 color)
     {
         penColour = color;
-        Debug.Log(color);
 
         if (penColour.r == 0 && penColour.g == 0 && penColour.b == 0)
         {
@@ -504,5 +525,46 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private float Map(float value, float sMin, float sMax, float mMin, float mMax)
     {
         return (value - sMin) * (mMax - mMin) / (sMax - sMin) + mMin;
+    }
+
+    private void On128x128Change()
+    {
+        Debug.Log("Change");
+
+        this.sketchTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(128, 128);
+        this.heightmapTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(128, 128);
+
+        this.sketchTexture.transform.position = new Vector3(64, 64);
+        this.heightmapTexture.transform.position = new Vector3(200, 64);
+
+        this.basicSize = 128;
+
+        m_image = transform.GetComponent<RawImage>();
+    }
+
+    private void On256x256Change()
+    {
+        this.sketchTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(256, 256);
+        this.heightmapTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(256, 256);
+
+        this.sketchTexture.transform.position = new Vector3(128, 128);
+        this.heightmapTexture.transform.position = new Vector3(400, 128);
+
+        this.basicSize = 256;
+
+        m_image = transform.GetComponent<RawImage>();
+    }
+
+    private void On512x512Change()
+    {
+        this.sketchTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(512, 512);
+        this.heightmapTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(512, 512);
+
+        this.sketchTexture.transform.position = new Vector3(256, 256);
+        this.heightmapTexture.transform.position = new Vector3(800, 256);
+
+        this.basicSize = 512;
+
+        m_image = transform.GetComponent<RawImage>();
     }
 }

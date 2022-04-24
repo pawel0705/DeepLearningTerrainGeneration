@@ -22,14 +22,15 @@ public class PredictionRequester
 
     public void Intitialize()
     {
-        RequestSocket client = new RequestSocket();
+        Debug.Log("Initialize Request socket");
+        this.client = new RequestSocket();
 
-        this.client = client;
-        client.Connect(connectionString);
+        //client.Connect(connectionString);
     }
 
     public void UpdateResult()
     {
+        /*
         byte[] outputBytes = new byte[0];
         bool gotMessage = false;
 
@@ -53,10 +54,13 @@ public class PredictionRequester
             cantSendIterator = 0;
             loading.SetActive(false);
         }
+
+        */
     }
 
     public void SendInput(byte[] input)
     {
+        /*
         Debug.Log("SendInput");
         try
         {
@@ -87,11 +91,22 @@ public class PredictionRequester
             client.Connect(connectionString);
             cantSendIterator = 0;
         }
+        */
     }
 
     public void SetOnTextReceivedListener(Action<byte[]> onOutputReceived, Action<Exception> fallback)
     {
+        /*
         this.onOutputReceived = onOutputReceived;
         onFail = fallback;
+
+        */
+    }
+
+    public void ClearConnection()
+    {
+        ForceDotNet.Force();
+        this.client.Close();
+        NetMQConfig.Cleanup(false);
     }
 }

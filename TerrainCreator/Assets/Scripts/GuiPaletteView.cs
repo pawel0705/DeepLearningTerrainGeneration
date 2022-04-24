@@ -121,6 +121,7 @@ public class GuiPaletteView : MonoBehaviour
         MouseDrawComponent.Predict();
     }
 
+
     private void OnExit()
     {
         Application.Quit();
