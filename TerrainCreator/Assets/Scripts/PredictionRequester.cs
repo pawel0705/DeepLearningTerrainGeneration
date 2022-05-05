@@ -14,99 +14,96 @@ public class PredictionRequester
     private Action<Exception> onFail;
 
     private bool canSendNext = true;
-    private int cantSendIterator = 0;
-    private int cantSendMax = 25;
+
+    private float timeBetweenSend = 0;
+    private float maxTimeout = 3;
 
     private string connectionString = "tcp://localhost:5555";
-
 
     public void Intitialize()
     {
         Debug.Log("Initialize Request socket");
         this.client = new RequestSocket();
 
-        //client.Connect(connectionString);
+        client.Connect(connectionString);
     }
 
     public void UpdateResult()
     {
-        /*
         byte[] outputBytes = new byte[0];
         bool gotMessage = false;
 
-        if (canSendNext == false)
+        try
         {
-            try
-            {
-                gotMessage = client.TryReceiveFrameBytes(out outputBytes);  // this returns true if it's successful
-            }
-            catch (Exception e)
-            {
-                // TODO
-            }
+            gotMessage = client.TryReceiveFrameBytes(out outputBytes); 
+        }
+        catch (Exception ex)
+        {
+            // TODO
         }
 
-        if (gotMessage)
+        if (gotMessage == true)
         {
             Debug.Log("GotMessage");
             onOutputReceived?.Invoke(outputBytes);
             canSendNext = true;
-            cantSendIterator = 0;
             loading.SetActive(false);
+            this.timeBetweenSend = 0f;
         }
+        else
+        {
+            this.timeBetweenSend += Time.deltaTime;
+            if(this.timeBetweenSend > this.maxTimeout)
+            {
+                this.timeBetweenSend = 0;
+                canSendNext = true;
+            }
+        }
+    }
 
-        */
+    public void ServerReconnect()
+    {
+        this.client.Disconnect(connectionString);
+        this.client.Close();
+        ForceDotNet.Force();
+        NetMQConfig.Cleanup(false);
+
+        this.client = new RequestSocket();
+        this.client.Connect(connectionString);
+        loading.SetActive(false);
+        canSendNext = true;
     }
 
     public void SendInput(byte[] input)
     {
-        /*
-        Debug.Log("SendInput");
         try
         {
-            if(cantSendIterator > cantSendMax)
-            {
-                cantSendIterator = 0;
-                canSendNext = true;
-            }
-
             if (canSendNext == true)
             {
                 Debug.Log("CanSendNext");
-                canSendNext = false;
                 loading.SetActive(true);
                 client.SendFrame(input);
-            }
-            else
-            {
-                cantSendIterator++;
+                canSendNext = false;
             }
         }
         catch (Exception ex)
         {
             Debug.Log(ex);
             onFail(ex);
-            client.Close();
-            client = new RequestSocket();
-            client.Connect(connectionString);
-            cantSendIterator = 0;
+            this.ServerReconnect();
         }
-        */
     }
 
     public void SetOnTextReceivedListener(Action<byte[]> onOutputReceived, Action<Exception> fallback)
     {
-        /*
         this.onOutputReceived = onOutputReceived;
         onFail = fallback;
-
-        */
     }
 
     public void ClearConnection()
     {
-        ForceDotNet.Force();
         this.client.Close();
+        ForceDotNet.Force();
         NetMQConfig.Cleanup(false);
     }
 }

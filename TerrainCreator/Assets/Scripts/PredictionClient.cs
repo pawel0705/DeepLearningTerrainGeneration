@@ -32,6 +32,12 @@ public class PredictionClient : MonoBehaviour
         predictionRequester.SendInput(input);
     }
 
+
+    public void ServerReconnect()
+    {
+        predictionRequester.ServerReconnect();
+    }
+
     void OnApplicationQuit()
     {
         this.predictionRequester.ClearConnection();

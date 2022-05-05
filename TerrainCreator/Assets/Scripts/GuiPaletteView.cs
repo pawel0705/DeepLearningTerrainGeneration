@@ -10,7 +10,7 @@ public class GuiPaletteView : MonoBehaviour
     private MouseDraw MouseDrawComponent;
 
     [SerializeField]
-    private ColorPalette Swatch1, Swatch2, Swatch3, Swatch4;
+    private ColorPalette Swatch1, Swatch2, Swatch3, Swatch4, Swatch5, Swatch6, Swatch7, Swatch8, Swatch9, Swatch10;
 
     [SerializeField]
     private Slider penWidth;
@@ -19,10 +19,10 @@ public class GuiPaletteView : MonoBehaviour
     private Toggle eraser;
 
     [SerializeField]
-    private Toggle constantPrediction;
+    private Toggle constantPrediction, constantTextureUpdate;
 
     [SerializeField]
-    private Button clearButton, exportSketchButton, exportHeightmapButton, exitButton, predictionButton;
+    private Button clearButton, exportSketchButton, exportHeightmapButton, exitButton, predictionButton, updateTextureButton, btnServerReconnect;
 
     [SerializeField]
     private string SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -33,7 +33,7 @@ public class GuiPaletteView : MonoBehaviour
     void Start()
     {
         OnPenWidthChanged(penWidth.value);
-        OnPenColourChanged(Color.red);
+        OnPenColourChanged(Color.red, 5);
     }
 
     void Update()
@@ -52,15 +52,24 @@ public class GuiPaletteView : MonoBehaviour
         Swatch2.ColourChanged += OnPenColourChanged;
         Swatch3.ColourChanged += OnPenColourChanged;
         Swatch4.ColourChanged += OnPenColourChanged;
+        Swatch5.ColourChanged += OnPenColourChanged;
+        Swatch6.ColourChanged += OnPenColourChanged;
+        Swatch7.ColourChanged += OnPenColourChanged;
+        Swatch8.ColourChanged += OnPenColourChanged;
+        Swatch9.ColourChanged += OnPenColourChanged;
+        Swatch10.ColourChanged += OnPenColourChanged;
 
         penWidth.onValueChanged.AddListener(OnPenWidthChanged);
         eraser.onValueChanged.AddListener(OnEraserToggled);
         constantPrediction.onValueChanged.AddListener(OnConstantPredictionToggled);
+        constantTextureUpdate.onValueChanged.AddListener(OnConstantTextureUpdateToggled);
         clearButton.onClick.AddListener(OnClearDrawing);
         exportSketchButton.onClick.AddListener(OnExportSketchDrawing);
         exportHeightmapButton.onClick.AddListener(OnExportHeightmapDrawing);
         exitButton.onClick.AddListener(OnExit);
         predictionButton.onClick.AddListener(OnPrediction);
+        updateTextureButton.onClick.AddListener(OnUpdateTexture);
+        btnServerReconnect.onClick.AddListener(OnServerReconnect);
     }
     private void OnDisable()
     {
@@ -68,6 +77,12 @@ public class GuiPaletteView : MonoBehaviour
         Swatch2.ColourChanged -= OnPenColourChanged;
         Swatch3.ColourChanged -= OnPenColourChanged;
         Swatch4.ColourChanged -= OnPenColourChanged;
+        Swatch5.ColourChanged -= OnPenColourChanged;
+        Swatch6.ColourChanged -= OnPenColourChanged;
+        Swatch7.ColourChanged -= OnPenColourChanged;
+        Swatch8.ColourChanged -= OnPenColourChanged;
+        Swatch9.ColourChanged -= OnPenColourChanged;
+        Swatch10.ColourChanged -= OnPenColourChanged;
 
         penWidth.onValueChanged.RemoveListener(OnPenWidthChanged);
         eraser.onValueChanged.RemoveListener(OnEraserToggled);
@@ -75,13 +90,16 @@ public class GuiPaletteView : MonoBehaviour
         clearButton.onClick.RemoveListener(OnClearDrawing);
         exportSketchButton.onClick.RemoveListener(OnExportSketchDrawing);
         exportHeightmapButton.onClick.RemoveListener(OnExportHeightmapDrawing);
+        constantTextureUpdate.onValueChanged.RemoveListener(OnConstantTextureUpdateToggled);
         exitButton.onClick.RemoveListener(OnExit);
         predictionButton.onClick.RemoveListener(OnPrediction);
+        updateTextureButton.onClick.RemoveListener(OnUpdateTexture);
+        btnServerReconnect.onClick.RemoveListener(OnServerReconnect);
     }
 
-    private void OnPenColourChanged(Color32 colour)
+    private void OnPenColourChanged(Color32 colour, int number)
     {
-        MouseDrawComponent.SetPenColour(colour);
+        MouseDrawComponent.SetPenColour(colour, number);
         eraser.isOn = false;
         OnEraserToggled(false);
     }
@@ -99,6 +117,11 @@ public class GuiPaletteView : MonoBehaviour
     private void OnConstantPredictionToggled(bool value)
     {
         MouseDrawComponent.IsConstantDrawPrediction = value;
+    }
+
+    private void OnConstantTextureUpdateToggled(bool value)
+    {
+        MouseDrawComponent.IsConstantTextureUpdate = value;
     }
 
     private void OnClearDrawing()
@@ -121,6 +144,15 @@ public class GuiPaletteView : MonoBehaviour
         MouseDrawComponent.Predict();
     }
 
+    private void OnServerReconnect()
+    {
+        MouseDrawComponent.ServerReconnect();
+    }
+
+    private void OnUpdateTexture()
+    {
+        MouseDrawComponent.UpdateTexture();
+    }
 
     private void OnExit()
     {

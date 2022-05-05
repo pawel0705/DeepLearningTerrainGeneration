@@ -6,15 +6,10 @@ using UnityEngine.UI;
 public class GUIToggler : MonoBehaviour
 {
     [SerializeField]
-    private Button paletteGUIButton, drawingGUIButton;
+    private GameObject drawing, heightmap, paletteGUI;
 
     [SerializeField]
-    private GameObject paletteGUI, drawingGUI;
-
-
-    private int togglePaletteCounter = 1;
-
-    private int toggleDrawingCounter = 1;
+    private Toggle showDrawing, showHeightmap, showPaletteGUI;
 
     // Start is called before the first frame update
     void Start()
@@ -30,41 +25,29 @@ public class GUIToggler : MonoBehaviour
 
     private void OnEnable()
     {
-        paletteGUIButton.onClick.AddListener(OnTogglePaletteGUI);
-        drawingGUIButton.onClick.AddListener(OnToggleDrawingGUI);
+        showPaletteGUI.onValueChanged.AddListener(OnTogglePaletteGUI);
+        showDrawing.onValueChanged.AddListener(OnDrawingToggle);
+        showHeightmap.onValueChanged.AddListener(OnHeightmapToggle);
     }
     private void OnDisable()
     {
-        paletteGUIButton.onClick.RemoveListener(OnTogglePaletteGUI);
-        drawingGUIButton.onClick.RemoveListener(OnToggleDrawingGUI);
+        showPaletteGUI.onValueChanged.RemoveListener(OnTogglePaletteGUI);
+        showDrawing.onValueChanged.RemoveListener(OnDrawingToggle);
+        showHeightmap.onValueChanged.RemoveListener(OnHeightmapToggle);
     }
 
-    private void OnTogglePaletteGUI()
+    private void OnTogglePaletteGUI(bool value)
     {
-        togglePaletteCounter++;
-
-        if (togglePaletteCounter % 2 == 0)
-        {
-            paletteGUI.SetActive(false);
-        }
-        else
-        {
-            paletteGUI.SetActive(true);
-        }
+        this.paletteGUI.SetActive(value);
     }
 
-    private void OnToggleDrawingGUI()
+    private void OnDrawingToggle(bool value)
     {
-        toggleDrawingCounter++;
-
-        if (toggleDrawingCounter % 2 == 0)
-        {
-            drawingGUI.SetActive(false);
-        }
-        else
-        {
-            drawingGUI.SetActive(true);
-        }
+        drawing.SetActive(value);
     }
 
+    private void OnHeightmapToggle(bool value)
+    {
+        heightmap.SetActive(value);
+    }
 }

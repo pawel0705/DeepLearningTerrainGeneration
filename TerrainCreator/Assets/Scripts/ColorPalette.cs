@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public class ColorPalette : MonoBehaviour, IPointerDownHandler, IDragHandler
 {
-    public delegate void OnColourChanged(Color32 colour);
+    public delegate void OnColourChanged(Color32 colour, int number);
 
     public event OnColourChanged ColourChanged;
 
@@ -12,6 +12,9 @@ public class ColorPalette : MonoBehaviour, IPointerDownHandler, IDragHandler
     private Image Swatch;
 
     private Image m_image;
+
+    [SerializeField]
+    public int number;
 
     private void Awake()
     {
@@ -41,6 +44,6 @@ public class ColorPalette : MonoBehaviour, IPointerDownHandler, IDragHandler
     {
         Color32 col = m_image.color;
 
-        ColourChanged?.Invoke(col);
+        ColourChanged?.Invoke(col, number);
     }
 }

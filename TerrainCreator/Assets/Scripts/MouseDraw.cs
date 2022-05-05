@@ -12,6 +12,8 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public bool IsConstantDrawPrediction = true;
 
+    public bool IsConstantTextureUpdate = true;
+
     public Color32 penColour = new Color32(0, 0, 0, 255);
 
     public Color32 backroundColour = new Color32(0, 0, 0, 255);
@@ -46,16 +48,15 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private bool predicted = false;
 
-    [SerializeField]
-    private Image penPointerBlack, penPointerRed, penPointerBlue, penPointerGreen;
+    private bool stillDrawing = false;
 
     [SerializeField]
-    private Button btn128, btn256, btn512;
+    private Image penPointer1, penPointer2, penPointer3, penPointer4, penPointer5, penPointer6, penPointer7, penPointer8, penPointer9, penPointer10;
 
     [SerializeField]
     private GameObject sketchTexture, heightmapTexture;
 
-    private int basicSize = 256;
+    private int basicSize = 512;
 
     public bool IsInFocus
     {
@@ -92,6 +93,11 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             if (Input.GetMouseButton(0))
             {
                 WritePixels(pos);
+
+                if (this.IsConstantDrawPrediction == true)
+                {
+                    this.stillDrawing = true;
+                }
             }
         }
 
@@ -103,6 +109,13 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         if (predicted == true)
         {
             Debug.Log("Predicted");
+
+            if (this.stillDrawing == true && this.IsConstantDrawPrediction == true)
+            {
+                this.stillDrawing = false;
+                this.Predict();
+            }
+
             RebuildTerrain();
         }
     }
@@ -111,47 +124,43 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         m_image = transform.GetComponent<RawImage>();
         TogglePenPointerVisibility(false);
-
-        Debug.Log("On enable");
-        btn128.onClick.AddListener(On128x128Change);
-        btn256.onClick.AddListener(On256x256Change);
-        btn512.onClick.AddListener(On512x512Change);
     }
 
     private void OnDisable()
     {
-        btn128.onClick.RemoveListener(On128x128Change);
-        btn256.onClick.RemoveListener(On256x256Change);
-        btn512.onClick.RemoveListener(On512x512Change);
     }
 
     private void RebuildTerrain()
     {
         var tex2d = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGB24, false);
         var startPoint = 0;
-        for (var x = 0; x < this.basicSize; x++)
+        var heights = new float[this.basicSize, this.basicSize];
+        var colorsTmpArray = new Color[this.basicSize * this.basicSize];
+        for (var x = this.basicSize - 1; x > 0; x--)
         {
             for (var y = 0; y < this.basicSize; y++)
             {
-                tex2d.SetPixel(x, y, new Color(output_tmp[startPoint] / 255.0f, output_tmp[startPoint + 1] / 255.0f, output_tmp[startPoint + 2] / 255.0f));
+                var colTmp = new Color(output_tmp[startPoint] / 255.0f, output_tmp[startPoint + 1] / 255.0f, output_tmp[startPoint + 2] / 255.0f);
+                var index = y + (x * this.basicSize);
+                colorsTmpArray[index] = colTmp;
+
+                if (y > 1)
+                {
+                    heights[x, y] = colTmp.grayscale;
+                }
+
                 startPoint += 3;
             }
         }
-
+        tex2d.SetPixels(colorsTmpArray);
         tex2d.Apply();
         m_image_heightmap.texture = tex2d;
-
-        var heights = new float[this.basicSize, this.basicSize];
-        for (int x = 0; x < this.basicSize; x++)
-        {
-            for (int y = 0; y < this.basicSize; y++)
-            {
-                heights[x, y] = tex2d.GetPixel(y, x).grayscale * 0.6f;
-            }
-        }
         terrain.terrainData.SetHeights(0, 0, heights);
 
-        RepaintTerrain();
+        if (this.IsConstantTextureUpdate == true)
+        {
+            RepaintTerrain();
+        }
 
         predicted = false;
     }
@@ -282,25 +291,46 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         return positions;
     }
 
-    public void SetPenColour(Color32 color)
+    public void SetPenColour(Color32 color, int number)
     {
+        Debug.Log(color);
         penColour = color;
 
-        if (penColour.r == 0 && penColour.g == 0 && penColour.b == 0)
+        switch (number)
         {
-            penPointer = penPointerBlack;
-        }
-        else if (penColour.r == 255)
-        {
-            penPointer = penPointerRed;
-        }
-        else if (penColour.g == 255)
-        {
-            penPointer = penPointerGreen;
-        }
-        else if (penColour.b == 255)
-        {
-            penPointer = penPointerBlue;
+            case 1:
+                this.penPointer = this.penPointer1;
+                break;
+            case 2:
+                this.penPointer = this.penPointer2;
+                break;
+            case 3:
+                this.penPointer = this.penPointer3;
+                break;
+            case 4:
+                this.penPointer = this.penPointer4;
+                break;
+            case 5:
+                this.penPointer = this.penPointer5;
+                break;
+            case 6:
+                this.penPointer = this.penPointer6;
+                break;
+            case 7:
+                this.penPointer = this.penPointer7;
+                break;
+            case 8:
+                this.penPointer = this.penPointer8;
+                break;
+            case 9:
+                this.penPointer = this.penPointer9;
+                break;
+            case 10:
+                this.penPointer = this.penPointer10;
+                break;
+            default:
+                this.penPointer = this.penPointer1;
+                break;
         }
     }
 
@@ -363,8 +393,13 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         }, error =>
         {
-            // TODO: when i am not lazy
+            // TODO
         });
+    }
+
+    public void ServerReconnect()
+    {
+        this.client.ServerReconnect();
     }
 
     public void ExportSketch(string targetDirectory, string fileName)
@@ -508,6 +543,11 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         terrain.terrainData.SetAlphamaps(0, 0, splatmapData);
     }
 
+    public void UpdateTexture()
+    {
+        this.RepaintTerrain();
+    }
+
     private void Normalize(float[] v)
     {
         float total = 0;
@@ -525,46 +565,5 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private float Map(float value, float sMin, float sMax, float mMin, float mMax)
     {
         return (value - sMin) * (mMax - mMin) / (sMax - sMin) + mMin;
-    }
-
-    private void On128x128Change()
-    {
-        Debug.Log("Change");
-
-        this.sketchTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(128, 128);
-        this.heightmapTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(128, 128);
-
-        this.sketchTexture.transform.position = new Vector3(64, 64);
-        this.heightmapTexture.transform.position = new Vector3(200, 64);
-
-        this.basicSize = 128;
-
-        m_image = transform.GetComponent<RawImage>();
-    }
-
-    private void On256x256Change()
-    {
-        this.sketchTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(256, 256);
-        this.heightmapTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(256, 256);
-
-        this.sketchTexture.transform.position = new Vector3(128, 128);
-        this.heightmapTexture.transform.position = new Vector3(400, 128);
-
-        this.basicSize = 256;
-
-        m_image = transform.GetComponent<RawImage>();
-    }
-
-    private void On512x512Change()
-    {
-        this.sketchTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(512, 512);
-        this.heightmapTexture.GetComponent<RectTransform>().sizeDelta = new Vector2(512, 512);
-
-        this.sketchTexture.transform.position = new Vector3(256, 256);
-        this.heightmapTexture.transform.position = new Vector3(800, 256);
-
-        this.basicSize = 512;
-
-        m_image = transform.GetComponent<RawImage>();
     }
 }
