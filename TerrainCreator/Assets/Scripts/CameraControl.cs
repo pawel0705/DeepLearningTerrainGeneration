@@ -5,22 +5,18 @@ using UnityEngine.EventSystems;
 
 public class CameraControl : MonoBehaviour
 {
-    private enum RotationAxes 
-    { 
-        MouseXAndY = 0, 
-        MouseX = 1, 
-        MouseY = 2 
+    private enum RotationAxes
+    {
+        MouseXAndY = 0,
+        MouseX = 1,
+        MouseY = 2
     }
 
     private RotationAxes axes = RotationAxes.MouseXAndY;
 
-    private float sensitivityX = 2F;
+    private float sensitivityX = 5F;
 
-    private float sensitivityY = 2F;
-
-    private float minimumX = -360F;
-
-    private float maximumX = 360F;
+    private float sensitivityY = 5F;
 
     private float minimumY = -90F;
 
@@ -30,7 +26,7 @@ public class CameraControl : MonoBehaviour
 
     void Update()
     {
-        MouseInput();
+        this.MouseInput();
     }
 
     void MouseInput()
@@ -42,26 +38,27 @@ public class CameraControl : MonoBehaviour
 
         if (Input.GetMouseButton(0))
         {
+
         }
         else if (Input.GetMouseButton(1))
         {
-            MouseRightClick();
+            this.MouseRightClick();
         }
         else if (Input.GetMouseButton(2))
         {
-            MouseMiddleButtonClicked();
+            this.MouseMiddleButtonClicked();
         }
         else if (Input.GetMouseButtonUp(1))
         {
-            ShowAndUnlockCursor();
+            this.ShowAndUnlockCursor();
         }
         else if (Input.GetMouseButtonUp(2))
         {
-            ShowAndUnlockCursor();
+            this.ShowAndUnlockCursor();
         }
         else
         {
-            MouseWheeling();
+            this.MouseWheeling();
         }
     }
 
@@ -79,67 +76,74 @@ public class CameraControl : MonoBehaviour
 
     void MouseMiddleButtonClicked()
     {
-        HideAndLockCursor();
-        Vector3 NewPosition = new Vector3(Input.GetAxis("Mouse X"), 0, Input.GetAxis("Mouse Y"));
-        Vector3 pos = transform.position;
+        this.HideAndLockCursor();
+
+        var NewPosition = new Vector3(Input.GetAxis("Mouse X"), 0, Input.GetAxis("Mouse Y"));
+        var pos = this.transform.position;
+
         if (NewPosition.x > 0.0f)
         {
-            pos += transform.right;
+            pos += this.transform.right * 15f;
         }
+
         if (NewPosition.x < 0.0f)
         {
-            pos -= transform.right;
+            pos -= this.transform.right * 15f;
         }
+
         if (NewPosition.z > 0.0f)
         {
-            pos += transform.forward;
+            pos += this.transform.forward * 15f;
         }
+
         if (NewPosition.z < 0.0f)
         {
-            pos -= transform.forward;
+            pos -= this.transform.forward * 15f;
         }
-        pos.y = transform.position.y;
-        transform.position = pos;
+
+        pos.y = this.transform.position.y;
+        this.transform.position = pos;
     }
 
     void MouseRightClick()
     {
-        HideAndLockCursor();
+        this.HideAndLockCursor();
+
         if (axes == RotationAxes.MouseXAndY)
         {
-            float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
+            var rotationX = this.transform.localEulerAngles.y + Input.GetAxis("Mouse X") * this.sensitivityX;
 
-            rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-            rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
+            this.rotationY += Input.GetAxis("Mouse Y") * this.sensitivityY;
+            this.rotationY = Mathf.Clamp(this.rotationY, this.minimumY, this.maximumY);
 
-            transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
+            this.transform.localEulerAngles = new Vector3(-this.rotationY, rotationX, 0);
         }
         else if (axes == RotationAxes.MouseX)
         {
-            transform.Rotate(0, Input.GetAxis("Mouse X") * sensitivityX, 0);
+            this.transform.Rotate(0, Input.GetAxis("Mouse X") * this.sensitivityX, 0);
         }
         else
         {
-            rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-            rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
+            this.rotationY += Input.GetAxis("Mouse Y") * this.sensitivityY;
+            this.rotationY = Mathf.Clamp(this.rotationY, this.minimumY, this.maximumY);
 
-            transform.localEulerAngles = new Vector3(-rotationY, transform.localEulerAngles.y, 0);
+            this.transform.localEulerAngles = new Vector3(-this.rotationY, this.transform.localEulerAngles.y, 0);
         }
     }
 
     void MouseWheeling()
     {
-        Vector3 pos = transform.position;
+        var pos = this.transform.position;
         if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
-            pos = pos - transform.forward * 4f;
-            transform.position = pos;
+            pos = pos - this.transform.forward * 115f;
+            this.transform.position = pos;
         }
 
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
-            pos = pos + transform.forward * 4f;
-            transform.position = pos;
+            pos = pos + this.transform.forward * 115f;
+            this.transform.position = pos;
         }
     }
 }

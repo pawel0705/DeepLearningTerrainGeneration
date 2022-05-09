@@ -11,13 +11,11 @@ public class GUIToggler : MonoBehaviour
     [SerializeField]
     private Toggle showDrawing, showHeightmap, showPaletteGUI;
 
-    // Start is called before the first frame update
     void Start()
     {
 
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -25,15 +23,15 @@ public class GUIToggler : MonoBehaviour
 
     private void OnEnable()
     {
-        showPaletteGUI.onValueChanged.AddListener(OnTogglePaletteGUI);
-        showDrawing.onValueChanged.AddListener(OnDrawingToggle);
-        showHeightmap.onValueChanged.AddListener(OnHeightmapToggle);
+        this.showPaletteGUI.onValueChanged.AddListener(OnTogglePaletteGUI);
+        this.showDrawing.onValueChanged.AddListener(OnDrawingToggle);
+        this.showHeightmap.onValueChanged.AddListener(OnHeightmapToggle);
     }
     private void OnDisable()
     {
-        showPaletteGUI.onValueChanged.RemoveListener(OnTogglePaletteGUI);
-        showDrawing.onValueChanged.RemoveListener(OnDrawingToggle);
-        showHeightmap.onValueChanged.RemoveListener(OnHeightmapToggle);
+        this.showPaletteGUI.onValueChanged.RemoveListener(OnTogglePaletteGUI);
+        this.showDrawing.onValueChanged.RemoveListener(OnDrawingToggle);
+        this.showHeightmap.onValueChanged.RemoveListener(OnHeightmapToggle);
     }
 
     private void OnTogglePaletteGUI(bool value)
@@ -43,11 +41,11 @@ public class GUIToggler : MonoBehaviour
 
     private void OnDrawingToggle(bool value)
     {
-        drawing.SetActive(value);
+        this.drawing.SetActive(value);
     }
 
     private void OnHeightmapToggle(bool value)
     {
-        heightmap.SetActive(value);
+        this.heightmap.SetActive(value);
     }
 }

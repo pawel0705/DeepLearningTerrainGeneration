@@ -11,31 +11,30 @@ public class PredictionClient : MonoBehaviour
 
     void Start()
     {
-        InitializeServer();
+        this.InitializeServer();
     }
 
     void Update()
     {
-        predictionRequester.UpdateResult();
+        this.predictionRequester.UpdateResult();
     }
 
     public void InitializeServer()
     {
-        predictionRequester = new PredictionRequester();
-        predictionRequester.loading = loading;
-        predictionRequester.Intitialize();
+        this.predictionRequester = new PredictionRequester();
+        this.predictionRequester.loading = loading;
+        this.predictionRequester.Intitialize();
     }
 
     public void Predict(byte[] input, Action<byte[]> onOutputReceived, Action<Exception> fallback)
     {
-        predictionRequester.SetOnTextReceivedListener(onOutputReceived, fallback);
-        predictionRequester.SendInput(input);
+        this.predictionRequester.SetOnTextReceivedListener(onOutputReceived, fallback);
+        this.predictionRequester.SendInput(input);
     }
-
 
     public void ServerReconnect()
     {
-        predictionRequester.ServerReconnect();
+        this.predictionRequester.ServerReconnect();
     }
 
     void OnApplicationQuit()

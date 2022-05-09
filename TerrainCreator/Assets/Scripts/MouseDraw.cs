@@ -65,8 +65,8 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             if (value != _isInFocus)
             {
-                _isInFocus = value;
-                TogglePenPointerVisibility(value);
+                this._isInFocus = value;
+                this.TogglePenPointerVisibility(value);
             }
         }
     }
@@ -79,20 +79,20 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     void Start()
     {
-        Init();
+        this.Init();
     }
 
     void Update()
     {
         var pos = Input.mousePosition;
 
-        if (IsInFocus)
+        if (this.IsInFocus == true)
         {
-            SetPenPointerPosition(pos);
+            this.SetPenPointerPosition(pos);
 
             if (Input.GetMouseButton(0))
             {
-                WritePixels(pos);
+                this.WritePixels(pos);
 
                 if (this.IsConstantDrawPrediction == true)
                 {
@@ -103,31 +103,30 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         if (Input.GetMouseButtonUp(0))
         {
-            m_lastPos = null;
+            this.m_lastPos = null;
         }
 
-        if (predicted == true)
+        if (this.predicted == true)
         {
-            Debug.Log("Predicted");
-
             if (this.stillDrawing == true && this.IsConstantDrawPrediction == true)
             {
                 this.stillDrawing = false;
                 this.Predict();
             }
 
-            RebuildTerrain();
+            this.RebuildTerrain();
         }
     }
 
     private void OnEnable()
     {
-        m_image = transform.GetComponent<RawImage>();
-        TogglePenPointerVisibility(false);
+        this.m_image = transform.GetComponent<RawImage>();
+        this.TogglePenPointerVisibility(false);
     }
 
     private void OnDisable()
     {
+
     }
 
     private void RebuildTerrain()
@@ -136,11 +135,12 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         var startPoint = 0;
         var heights = new float[this.basicSize, this.basicSize];
         var colorsTmpArray = new Color[this.basicSize * this.basicSize];
+
         for (var x = this.basicSize - 1; x > 0; x--)
         {
             for (var y = 0; y < this.basicSize; y++)
             {
-                var colTmp = new Color(output_tmp[startPoint] / 255.0f, output_tmp[startPoint + 1] / 255.0f, output_tmp[startPoint + 2] / 255.0f);
+                var colTmp = new Color(this.output_tmp[startPoint] / 255.0f, this.output_tmp[startPoint + 1] / 255.0f, this.output_tmp[startPoint + 2] / 255.0f);
                 var index = y + (x * this.basicSize);
                 colorsTmpArray[index] = colTmp;
 
@@ -152,37 +152,40 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 startPoint += 3;
             }
         }
+
         tex2d.SetPixels(colorsTmpArray);
         tex2d.Apply();
-        m_image_heightmap.texture = tex2d;
-        terrain.terrainData.SetHeights(0, 0, heights);
+
+        this.m_image_heightmap.texture = tex2d;
+        this.terrain.terrainData.SetHeights(0, 0, heights);
 
         if (this.IsConstantTextureUpdate == true)
         {
-            RepaintTerrain();
+            this.RepaintTerrain();
         }
 
-        predicted = false;
+        this.predicted = false;
     }
 
     private void Init()
     {
         var tex = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGBA32, false);
+
         for (int i = 0; i < tex.width; i++)
         {
             for (int j = 0; j < tex.height; j++)
             {
-                tex.SetPixel(i, j, backroundColour);
+                tex.SetPixel(i, j, this.backroundColour);
             }
         }
 
         tex.Apply();
-        m_image.texture = tex;
+        this.m_image.texture = tex;
     }
 
     private void WritePixels(Vector2 pos)
     {
-        var mainTex = m_image.texture;
+        var mainTex = this.m_image.texture;
 
         var tex2d = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGBA32, false);
 
@@ -194,13 +197,13 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         tex2d.ReadPixels(new Rect(0, 0, this.basicSize, this.basicSize), 0, 0);
 
-        var col = IsEraser ? backroundColour : penColour;
+        var col = this.IsEraser ? this.backroundColour : this.penColour;
 
-        var positions = m_lastPos.HasValue ? GetLinearPositions(m_lastPos.Value, pos) : new List<Vector2>() { pos };
+        var positions = this.m_lastPos.HasValue ? this.GetLinearPositions(this.m_lastPos.Value, pos) : new List<Vector2>() { pos };
 
         foreach (var position in positions)
         {
-            var pixels = GetNeighbouringPixels(new Vector2(this.basicSize, this.basicSize), position, penRadius);
+            var pixels = GetNeighbouringPixels(new Vector2(this.basicSize, this.basicSize), position, this.penRadius);
 
             if (pixels.Count > 0)
             {
@@ -222,10 +225,10 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         renTex = null;
         mainTex = null;
 
-        m_image.texture = tex2d;
-        m_lastPos = pos;
+        this.m_image.texture = tex2d;
+        this.m_lastPos = pos;
 
-        if (IsConstantDrawPrediction == true)
+        if (this.IsConstantDrawPrediction == true)
         {
             Predict();
         }
@@ -233,7 +236,6 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void ClearTexture()
     {
-        var mainTex = m_image.texture;
         var tex2d = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGB24, false);
 
         for (int i = 0; i < tex2d.width; i++)
@@ -245,9 +247,9 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
 
         tex2d.Apply();
-        m_image.texture = tex2d;
+        this.m_image.texture = tex2d;
 
-        Predict();
+        this.Predict();
     }
 
     private List<Vector2> GetNeighbouringPixels(Vector2 textureSize, Vector2 position, int brushRadius)
@@ -293,8 +295,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void SetPenColour(Color32 color, int number)
     {
-        Debug.Log(color);
-        penColour = color;
+        this.penColour = color;
 
         switch (number)
         {
@@ -338,13 +339,13 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private void SetPenPointerSize()
     {
-        var rt = penPointer.rectTransform;
+        var rt = this.penPointer.rectTransform;
         rt.sizeDelta = new Vector2(25, 25);
     }
 
     private void SetPenPointerPosition(Vector2 pos)
     {
-        penPointer.transform.position = pos;
+        this.penPointer.transform.position = pos;
     }
 
     private void TogglePenPointerVisibility(bool isVisible)
@@ -354,7 +355,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             SetPenPointerSize();
         }
 
-        penPointer.gameObject.SetActive(isVisible);
+        this.penPointer.gameObject.SetActive(isVisible);
         Cursor.visible = !isVisible;
     }
 
@@ -364,7 +365,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void Predict()
     {
-        var mainTex = m_image.texture;
+        var mainTex = this.m_image.texture;
         var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGB24, false);
 
         var curTex = RenderTexture.active;
@@ -385,15 +386,15 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         var input = tex2d.EncodeToPNG();
 
-        client.Predict(input, output =>
+        this.client.Predict(input, output =>
         {
             output_tmp = new byte[output.Length];
-            Array.Copy(output, 0, output_tmp, 0, output.Length);
+            Array.Copy(output, 0, this.output_tmp, 0, output.Length);
             predicted = true;
 
         }, error =>
         {
-            // TODO
+           
         });
     }
 
@@ -409,7 +410,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         targetDirectory = Path.Combine(targetDirectory, "TerrainAI");
 
-        var mainTex = m_image.texture;
+        var mainTex = this.m_image.texture;
         var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
 
         var curTex = RenderTexture.active;
@@ -454,7 +455,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         targetDirectory = Path.Combine(targetDirectory, "TerrainAI");
 
-        var mainTex = m_image_heightmap.texture;
+        var mainTex = this.m_image_heightmap.texture;
         var tex2d = new Texture2D(mainTex.width, mainTex.height, TextureFormat.RGBA32, false);
 
         var curTex = RenderTexture.active;
@@ -494,34 +495,34 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private void RepaintTerrain()
     {
-        terrain.terrainData.alphamapResolution = terrain.terrainData.heightmapResolution - 1;
+        this.terrain.terrainData.alphamapResolution = this.terrain.terrainData.heightmapResolution - 1;
 
-        float[,,] splatmapData = new float[terrain.terrainData.alphamapWidth,
-             terrain.terrainData.alphamapHeight,
-             terrain.terrainData.alphamapLayers];
+        var splatmapData = new float[this.terrain.terrainData.alphamapWidth,
+             this.terrain.terrainData.alphamapHeight,
+             this.terrain.terrainData.alphamapLayers];
 
-        for (int y = 0; y < terrain.terrainData.alphamapHeight; y++)
+        for (int y = 0; y < this.terrain.terrainData.alphamapHeight; y++)
         {
-            for (int x = 0; x < terrain.terrainData.alphamapWidth; x++)
+            for (int x = 0; x < this.terrain.terrainData.alphamapWidth; x++)
             {
-                float terrainHeight = terrain.terrainData.GetHeight(y, x);
-                float[] splat = new float[splatHeights.Length];
+                var terrainHeight = this.terrain.terrainData.GetHeight(y, x);
+                var splat = new float[this.splatHeights.Length];
 
-                for (int i = 0; i < splatHeights.Length; i++)
+                for (int i = 0; i < this.splatHeights.Length; i++)
                 {
                     float thisNoise = Map(Mathf.PerlinNoise(x * 0.05f, y * 0.05f), 0, 1, 0.5f, 1);
 
-                    float thisHeightStart = splatHeights[i].startingHeight * thisNoise
-                        - splatHeights[i].overlap * thisNoise;
+                    float thisHeightStart = this.splatHeights[i].startingHeight * thisNoise
+                        - this.splatHeights[i].overlap * thisNoise;
                     float nextHeightStart = 0;
 
-                    if (i != splatHeights.Length - 1)
+                    if (i != this.splatHeights.Length - 1)
                     {
-                        nextHeightStart = splatHeights[i + 1].startingHeight * thisNoise
-                            + splatHeights[i + 1].overlap * thisNoise;
+                        nextHeightStart = this.splatHeights[i + 1].startingHeight * thisNoise
+                            + this.splatHeights[i + 1].overlap * thisNoise;
                     }
 
-                    if (i == splatHeights.Length - 1 && terrainHeight >= thisHeightStart)
+                    if (i == this.splatHeights.Length - 1 && terrainHeight >= thisHeightStart)
                     {
                         splat[i] = 1;
                     }
@@ -531,16 +532,16 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                     }
                 }
 
-                Normalize(splat);
+                this.Normalize(splat);
 
-                for (int j = 0; j < splatHeights.Length; j++)
+                for (int j = 0; j < this.splatHeights.Length; j++)
                 {
                     splatmapData[x, y, j] = splat[j];
                 }
             }
         }
 
-        terrain.terrainData.SetAlphamaps(0, 0, splatmapData);
+        this.terrain.terrainData.SetAlphamaps(0, 0, splatmapData);
     }
 
     public void UpdateTexture()

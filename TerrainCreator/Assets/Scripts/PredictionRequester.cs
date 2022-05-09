@@ -22,41 +22,39 @@ public class PredictionRequester
 
     public void Intitialize()
     {
-        Debug.Log("Initialize Request socket");
         this.client = new RequestSocket();
-
-        client.Connect(connectionString);
+        this.client.Connect(connectionString);
     }
 
     public void UpdateResult()
     {
-        byte[] outputBytes = new byte[0];
-        bool gotMessage = false;
+        var outputBytes = new byte[0];
+        var gotMessage = false;
 
         try
         {
-            gotMessage = client.TryReceiveFrameBytes(out outputBytes); 
+            gotMessage = client.TryReceiveFrameBytes(out outputBytes);
         }
         catch (Exception ex)
         {
-            // TODO
+            Debug.Log(ex.Message);
         }
 
         if (gotMessage == true)
         {
-            Debug.Log("GotMessage");
-            onOutputReceived?.Invoke(outputBytes);
-            canSendNext = true;
-            loading.SetActive(false);
+            this.onOutputReceived?.Invoke(outputBytes);
+            this.canSendNext = true;
+            this.loading.SetActive(false);
             this.timeBetweenSend = 0f;
         }
         else
         {
             this.timeBetweenSend += Time.deltaTime;
-            if(this.timeBetweenSend > this.maxTimeout)
+
+            if (this.timeBetweenSend > this.maxTimeout)
             {
                 this.timeBetweenSend = 0;
-                canSendNext = true;
+                this.canSendNext = true;
             }
         }
     }
@@ -64,26 +62,25 @@ public class PredictionRequester
     public void ServerReconnect()
     {
         this.client.Disconnect(connectionString);
-        this.client.Close();
         ForceDotNet.Force();
+        this.client.Close();
         NetMQConfig.Cleanup(false);
 
         this.client = new RequestSocket();
         this.client.Connect(connectionString);
-        loading.SetActive(false);
-        canSendNext = true;
+        this.loading.SetActive(false);
+        this.canSendNext = true;
     }
 
     public void SendInput(byte[] input)
     {
         try
         {
-            if (canSendNext == true)
+            if (this.canSendNext == true)
             {
-                Debug.Log("CanSendNext");
-                loading.SetActive(true);
-                client.SendFrame(input);
-                canSendNext = false;
+                this.loading.SetActive(true);
+                this.client.SendFrame(input);
+                this.canSendNext = false;
             }
         }
         catch (Exception ex)
@@ -97,13 +94,14 @@ public class PredictionRequester
     public void SetOnTextReceivedListener(Action<byte[]> onOutputReceived, Action<Exception> fallback)
     {
         this.onOutputReceived = onOutputReceived;
-        onFail = fallback;
+        this.onFail = fallback;
     }
 
     public void ClearConnection()
     {
-        this.client.Close();
         ForceDotNet.Force();
+        this.client.Disconnect(connectionString);
+        this.client.Close();
         NetMQConfig.Cleanup(false);
     }
 }

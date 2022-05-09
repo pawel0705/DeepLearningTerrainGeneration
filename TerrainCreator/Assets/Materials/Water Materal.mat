@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -10,8 +10,12 @@ Material:
   m_Name: Water Materal
   m_Shader: {fileID: -6465566751694194690, guid: 507f9d9a2a4bd58428f23a1f59b85847,
     type: 3}
-  m_ShaderKeywords: _DISABLE_SSR_TRANSPARENT _DOUBLESIDED_ON _ENABLE_FOG_ON_TRANSPARENT
-    _SURFACE_TYPE_TRANSPARENT
+  m_ValidKeywords:
+  - _DISABLE_SSR_TRANSPARENT
+  - _DOUBLESIDED_ON
+  - _ENABLE_FOG_ON_TRANSPARENT
+  - _SURFACE_TYPE_TRANSPARENT
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
@@ -29,11 +33,11 @@ Material:
     m_TexEnvs:
     - _MainNormal:
         m_Texture: {fileID: 2800000, guid: c76986bc358d59147900fa4e30b5b9a7, type: 3}
-        m_Scale: {x: 0.1, y: 0.1}
+        m_Scale: {x: 0.5, y: 0.5}
         m_Offset: {x: 4, y: 4}
     - _SecondaryNormal:
         m_Texture: {fileID: 2800000, guid: 7a3c4e4cca12c0041997b09a17ee175e, type: 3}
-        m_Scale: {x: 0.1, y: 0.1}
+        m_Scale: {x: 0.5, y: 0.5}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
@@ -59,7 +63,7 @@ Material:
     - _ConservativeDepthOffsetEnable: 0
     - _CullMode: 0
     - _CullModeForward: 0
-    - _Depth: 1
+    - _Depth: 5
     - _DepthOffsetEnable: 0
     - _Displacement: 4.1
     - _DoubleSidedEnable: 1
@@ -88,7 +92,7 @@ Material:
     - _StencilWriteMaskDistortionVec: 4
     - _StencilWriteMaskGBuffer: 14
     - _StencilWriteMaskMV: 40
-    - _Strength: 0.13
+    - _Strength: 0.01
     - _SupportDecals: 1
     - _SurfaceType: 1
     - _TransparentBackfaceEnable: 0
@@ -104,10 +108,10 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 0
     m_Colors:
-    - _DeepWaterColor: {r: 0.49433947, g: 0.884013, b: 1, a: 0.07058824}
+    - _DeepWaterColor: {r: 0.49433947, g: 0.884013, b: 1, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShallowWaterColor: {r: 0.47547156, g: 0.9368191, b: 1, a: 0.7882353}
+    - _ShallowWaterColor: {r: 0.42830187, g: 0.9317376, b: 1, a: 0.5176471}
   m_BuildTextureStacks: []
 --- !u!114 &8230279506952395342
 MonoBehaviour:

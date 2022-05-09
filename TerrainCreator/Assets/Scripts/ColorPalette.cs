@@ -18,7 +18,7 @@ public class ColorPalette : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     private void Awake()
     {
-        m_image = transform.GetComponent<Image>();
+        this.m_image = this.transform.GetComponent<Image>();
     }
 
     private void OnDestroy()
@@ -42,7 +42,7 @@ public class ColorPalette : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     private void SamplePixel(PointerEventData eventData)
     {
-        Color32 col = m_image.color;
+        Color32 col = this.m_image.color;
 
         ColourChanged?.Invoke(col, number);
     }

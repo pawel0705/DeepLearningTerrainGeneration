@@ -32,126 +32,126 @@ public class GuiPaletteView : MonoBehaviour
 
     void Start()
     {
-        OnPenWidthChanged(penWidth.value);
-        OnPenColourChanged(Color.red, 5);
+        this.OnPenWidthChanged(penWidth.value);
+        this.OnPenColourChanged(Color.red, 5);
     }
 
     void Update()
     {
-        
+
     }
 
     private void OnEnable()
     {
-        if (!Directory.Exists(SaveDirectory))
+        if (!Directory.Exists(this.SaveDirectory))
         {
-            SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            this.SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         }
 
-        Swatch1.ColourChanged += OnPenColourChanged;
-        Swatch2.ColourChanged += OnPenColourChanged;
-        Swatch3.ColourChanged += OnPenColourChanged;
-        Swatch4.ColourChanged += OnPenColourChanged;
-        Swatch5.ColourChanged += OnPenColourChanged;
-        Swatch6.ColourChanged += OnPenColourChanged;
-        Swatch7.ColourChanged += OnPenColourChanged;
-        Swatch8.ColourChanged += OnPenColourChanged;
-        Swatch9.ColourChanged += OnPenColourChanged;
-        Swatch10.ColourChanged += OnPenColourChanged;
+        this.Swatch1.ColourChanged += this.OnPenColourChanged;
+        this.Swatch2.ColourChanged += this.OnPenColourChanged;
+        this.Swatch3.ColourChanged += this.OnPenColourChanged;
+        this.Swatch4.ColourChanged += this.OnPenColourChanged;
+        this.Swatch5.ColourChanged += this.OnPenColourChanged;
+        this.Swatch6.ColourChanged += this.OnPenColourChanged;
+        this.Swatch7.ColourChanged += this.OnPenColourChanged;
+        this.Swatch8.ColourChanged += this.OnPenColourChanged;
+        this.Swatch9.ColourChanged += this.OnPenColourChanged;
+        this.Swatch10.ColourChanged += this.OnPenColourChanged;
 
-        penWidth.onValueChanged.AddListener(OnPenWidthChanged);
-        eraser.onValueChanged.AddListener(OnEraserToggled);
-        constantPrediction.onValueChanged.AddListener(OnConstantPredictionToggled);
-        constantTextureUpdate.onValueChanged.AddListener(OnConstantTextureUpdateToggled);
-        clearButton.onClick.AddListener(OnClearDrawing);
-        exportSketchButton.onClick.AddListener(OnExportSketchDrawing);
-        exportHeightmapButton.onClick.AddListener(OnExportHeightmapDrawing);
-        exitButton.onClick.AddListener(OnExit);
-        predictionButton.onClick.AddListener(OnPrediction);
-        updateTextureButton.onClick.AddListener(OnUpdateTexture);
-        btnServerReconnect.onClick.AddListener(OnServerReconnect);
+        this.penWidth.onValueChanged.AddListener(this.OnPenWidthChanged);
+        this.eraser.onValueChanged.AddListener(this.OnEraserToggled);
+        this.constantPrediction.onValueChanged.AddListener(this.OnConstantPredictionToggled);
+        this.constantTextureUpdate.onValueChanged.AddListener(this.OnConstantTextureUpdateToggled);
+        this.clearButton.onClick.AddListener(this.OnClearDrawing);
+        this.exportSketchButton.onClick.AddListener(this.OnExportSketchDrawing);
+        this.exportHeightmapButton.onClick.AddListener(this.OnExportHeightmapDrawing);
+        this.exitButton.onClick.AddListener(this.OnExit);
+        this.predictionButton.onClick.AddListener(this.OnPrediction);
+        this.updateTextureButton.onClick.AddListener(this.OnUpdateTexture);
+        this.btnServerReconnect.onClick.AddListener(this.OnServerReconnect);
     }
     private void OnDisable()
     {
-        Swatch1.ColourChanged -= OnPenColourChanged;
-        Swatch2.ColourChanged -= OnPenColourChanged;
-        Swatch3.ColourChanged -= OnPenColourChanged;
-        Swatch4.ColourChanged -= OnPenColourChanged;
-        Swatch5.ColourChanged -= OnPenColourChanged;
-        Swatch6.ColourChanged -= OnPenColourChanged;
-        Swatch7.ColourChanged -= OnPenColourChanged;
-        Swatch8.ColourChanged -= OnPenColourChanged;
-        Swatch9.ColourChanged -= OnPenColourChanged;
-        Swatch10.ColourChanged -= OnPenColourChanged;
+        this.Swatch1.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch2.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch3.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch4.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch5.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch6.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch7.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch8.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch9.ColourChanged -= this.OnPenColourChanged;
+        this.Swatch10.ColourChanged -= this.OnPenColourChanged;
 
-        penWidth.onValueChanged.RemoveListener(OnPenWidthChanged);
-        eraser.onValueChanged.RemoveListener(OnEraserToggled);
-        constantPrediction.onValueChanged.RemoveListener(OnConstantPredictionToggled);
-        clearButton.onClick.RemoveListener(OnClearDrawing);
-        exportSketchButton.onClick.RemoveListener(OnExportSketchDrawing);
-        exportHeightmapButton.onClick.RemoveListener(OnExportHeightmapDrawing);
-        constantTextureUpdate.onValueChanged.RemoveListener(OnConstantTextureUpdateToggled);
-        exitButton.onClick.RemoveListener(OnExit);
-        predictionButton.onClick.RemoveListener(OnPrediction);
-        updateTextureButton.onClick.RemoveListener(OnUpdateTexture);
-        btnServerReconnect.onClick.RemoveListener(OnServerReconnect);
+        this.penWidth.onValueChanged.RemoveListener(this.OnPenWidthChanged);
+        this.eraser.onValueChanged.RemoveListener(this.OnEraserToggled);
+        this.constantPrediction.onValueChanged.RemoveListener(this.OnConstantPredictionToggled);
+        this.clearButton.onClick.RemoveListener(this.OnClearDrawing);
+        this.exportSketchButton.onClick.RemoveListener(this.OnExportSketchDrawing);
+        this.exportHeightmapButton.onClick.RemoveListener(this.OnExportHeightmapDrawing);
+        this.constantTextureUpdate.onValueChanged.RemoveListener(this.OnConstantTextureUpdateToggled);
+        this.exitButton.onClick.RemoveListener(this.OnExit);
+        this.predictionButton.onClick.RemoveListener(this.OnPrediction);
+        this.updateTextureButton.onClick.RemoveListener(this.OnUpdateTexture);
+        this.btnServerReconnect.onClick.RemoveListener(this.OnServerReconnect);
     }
 
     private void OnPenColourChanged(Color32 colour, int number)
     {
-        MouseDrawComponent.SetPenColour(colour, number);
-        eraser.isOn = false;
-        OnEraserToggled(false);
+        this.MouseDrawComponent.SetPenColour(colour, number);
+        this.eraser.isOn = false;
+        this.OnEraserToggled(false);
     }
 
     private void OnPenWidthChanged(float value)
     {
-        MouseDrawComponent.SetPenRadius((int)value);
+        this.MouseDrawComponent.SetPenRadius((int)value);
     }
 
     private void OnEraserToggled(bool value)
     {
-        MouseDrawComponent.IsEraser = value;
+        this.MouseDrawComponent.IsEraser = value;
     }
 
     private void OnConstantPredictionToggled(bool value)
     {
-        MouseDrawComponent.IsConstantDrawPrediction = value;
+        this.MouseDrawComponent.IsConstantDrawPrediction = value;
     }
 
     private void OnConstantTextureUpdateToggled(bool value)
     {
-        MouseDrawComponent.IsConstantTextureUpdate = value;
+        this.MouseDrawComponent.IsConstantTextureUpdate = value;
     }
 
     private void OnClearDrawing()
     {
-        MouseDrawComponent.ClearTexture();
+        this.MouseDrawComponent.ClearTexture();
     }
 
     private void OnExportSketchDrawing()
     {
-        MouseDrawComponent.ExportSketch(SaveDirectory, FileName);
+        this.MouseDrawComponent.ExportSketch(SaveDirectory, FileName);
     }
 
     private void OnExportHeightmapDrawing()
     {
-        MouseDrawComponent.ExportHeightmap(SaveDirectory, FileName);
+        this.MouseDrawComponent.ExportHeightmap(SaveDirectory, FileName);
     }
 
     private void OnPrediction()
     {
-        MouseDrawComponent.Predict();
+        this.MouseDrawComponent.Predict();
     }
 
     private void OnServerReconnect()
     {
-        MouseDrawComponent.ServerReconnect();
+        this.MouseDrawComponent.ServerReconnect();
     }
 
     private void OnUpdateTexture()
     {
-        MouseDrawComponent.UpdateTexture();
+        this.MouseDrawComponent.UpdateTexture();
     }
 
     private void OnExit()
