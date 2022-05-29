@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 10091.382, g: 10104.464, b: 11854.477, a: 1}
+  m_IndirectSpecularColor: {r: 9746.838, g: 9552.475, b: 10835.172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -12192,22 +12192,22 @@ MonoBehaviour:
   splatHeights:
   - textureIndex: 0
     startingHeight: 0
-    overlap: 100
-  - textureIndex: 0
-    startingHeight: 700
-    overlap: 100
-  - textureIndex: 0
-    startingHeight: 1100
-    overlap: 100
-  - textureIndex: 0
+    overlap: 300
+  - textureIndex: 1
+    startingHeight: 800
+    overlap: 500
+  - textureIndex: 2
     startingHeight: 1500
-    overlap: 100
-  - textureIndex: 0
-    startingHeight: 2600
-    overlap: 100
-  - textureIndex: 0
-    startingHeight: 3200
-    overlap: 100
+    overlap: 400
+  - textureIndex: 3
+    startingHeight: 1800
+    overlap: 200
+  - textureIndex: 4
+    startingHeight: 2500
+    overlap: 250
+  - textureIndex: 5
+    startingHeight: 3500
+    overlap: 500
   HostCanvas: {fileID: 1350678284}
   client: {fileID: 730378320}
   penRadius: 1

@@ -108,13 +108,18 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         if (this.predicted == true)
         {
+            if (this.stillDrawing == false)
+            {
+                this.RebuildTerrain();
+            }
+
             if (this.stillDrawing == true && this.IsConstantDrawPrediction == true)
             {
                 this.stillDrawing = false;
                 this.Predict();
             }
 
-            this.RebuildTerrain();
+            this.RepaintHeightmap();
         }
     }
 
@@ -129,20 +134,40 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     }
 
-    private void RebuildTerrain()
+    private void RepaintHeightmap()
     {
         var tex2d = new Texture2D(this.basicSize, this.basicSize, TextureFormat.RGB24, false);
         var startPoint = 0;
-        var heights = new float[this.basicSize, this.basicSize];
+
         var colorsTmpArray = new Color[this.basicSize * this.basicSize];
 
         for (var x = this.basicSize - 1; x > 0; x--)
         {
             for (var y = 0; y < this.basicSize; y++)
             {
+                colorsTmpArray[y + (x * this.basicSize)] = new Color(this.output_tmp[startPoint] / 255.0f, this.output_tmp[startPoint + 1] / 255.0f, this.output_tmp[startPoint + 2] / 255.0f);
+                startPoint += 3;
+            }
+        }
+
+        tex2d.SetPixels(colorsTmpArray);
+        tex2d.Apply();
+
+        this.m_image_heightmap.texture = tex2d;
+
+        this.predicted = false;
+    }
+
+    private void RebuildTerrain()
+    {
+        var startPoint = 0;
+        var heights = new float[this.basicSize, this.basicSize];
+
+        for (var x = this.basicSize - 1; x > 0; x--)
+        {
+            for (var y = 0; y < this.basicSize; y++)
+            {
                 var colTmp = new Color(this.output_tmp[startPoint] / 255.0f, this.output_tmp[startPoint + 1] / 255.0f, this.output_tmp[startPoint + 2] / 255.0f);
-                var index = y + (x * this.basicSize);
-                colorsTmpArray[index] = colTmp;
 
                 if (y > 1)
                 {
@@ -153,18 +178,12 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             }
         }
 
-        tex2d.SetPixels(colorsTmpArray);
-        tex2d.Apply();
-
-        this.m_image_heightmap.texture = tex2d;
         this.terrain.terrainData.SetHeights(0, 0, heights);
 
         if (this.IsConstantTextureUpdate == true)
         {
             this.RepaintTerrain();
         }
-
-        this.predicted = false;
     }
 
     private void Init()
@@ -248,8 +267,11 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         tex2d.Apply();
         this.m_image.texture = tex2d;
+        this.m_image_heightmap.texture = tex2d;
 
-        this.Predict();
+        var heights = new float[this.basicSize, this.basicSize];
+
+        this.terrain.terrainData.SetHeights(0, 0, heights);
     }
 
     private List<Vector2> GetNeighbouringPixels(Vector2 textureSize, Vector2 position, int brushRadius)
@@ -394,7 +416,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         }, error =>
         {
-           
+
         });
     }
 
@@ -510,7 +532,7 @@ public class MouseDraw : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
                 for (int i = 0; i < this.splatHeights.Length; i++)
                 {
-                    float thisNoise = Map(Mathf.PerlinNoise(x * 0.05f, y * 0.05f), 0, 1, 0.5f, 1);
+                    float thisNoise = Map(Mathf.PerlinNoise(x * 0.04f, y * 0.04f), 0, 1, 0.5f, 1);
 
                     float thisHeightStart = this.splatHeights[i].startingHeight * thisNoise
                         - this.splatHeights[i].overlap * thisNoise;
