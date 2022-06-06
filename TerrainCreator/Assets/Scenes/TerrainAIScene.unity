@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 9746.838, g: 9552.475, b: 10835.172, a: 1}
+  m_IndirectSpecularColor: {r: 9746.838, g: 9552.506, b: 10835.445, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -12194,10 +12194,10 @@ MonoBehaviour:
     startingHeight: 0
     overlap: 300
   - textureIndex: 1
-    startingHeight: 800
+    startingHeight: 700
     overlap: 500
   - textureIndex: 2
-    startingHeight: 1500
+    startingHeight: 1200
     overlap: 400
   - textureIndex: 3
     startingHeight: 1800
