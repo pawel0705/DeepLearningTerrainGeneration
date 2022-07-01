@@ -6,6 +6,8 @@ Pierwsza część repozytorium (zestaw jupyter notebooków przygotowujących wyu
 
 Wersja uruchamialna + wyuczony model: [google drive](https://drive.google.com/file/d/1YPSNNJ0lIhUlgtNwxOvHaP5LX9h3uwAl/view?usp=sharing)
 
+Wyuczony model zwraca mapę wysokości, która jest nakładana na model terenu. Tekstury są generowane w sposób algorytmiczny.
+
 Zalecane posiadanie technologii CUDA.
 
 ## Wygląd aplikacji
